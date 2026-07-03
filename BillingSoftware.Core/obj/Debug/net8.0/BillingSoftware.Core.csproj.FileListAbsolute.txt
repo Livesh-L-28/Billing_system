@@ -13,3 +13,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingS
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\refint\BillingSoftware.Core.dll
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\ref\BillingSoftware.Core.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.sourcelink.json

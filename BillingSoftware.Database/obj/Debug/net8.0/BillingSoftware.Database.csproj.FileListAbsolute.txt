@@ -17,3 +17,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Database\obj\Debug\net8.0\refi
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Database\obj\Debug\net8.0\BillingSoftware.Database.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Database\obj\Debug\net8.0\BillingSoftware.Database.genruntimeconfig.cache
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Database\obj\Debug\net8.0\ref\BillingSoftware.Database.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Database\obj\Debug\net8.0\BillingSoftware.Database.sourcelink.json

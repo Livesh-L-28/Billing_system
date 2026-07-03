@@ -8,9 +8,9 @@
     <Color x:Key="TextColor">#0F172A</Color>
     <Color x:Key="TextMutedColor">#64748B</Color>
     
-    <Color x:Key="AccentColor">#5F56FD</Color>
+    <Color x:Key="AccentColor">#6366F1</Color>
     <Color x:Key="AccentHoverColor">#4F46E5</Color>
-    <Color x:Key="AccentLightColor">#F0EFFF</Color>
+    <Color x:Key="AccentLightColor">#EEF2FF</Color>
     
     <Color x:Key="DangerColor">#F43F5E</Color>
     <Color x:Key="DangerHoverColor">#E11D48</Color>
@@ -48,11 +48,12 @@
     <SolidColorBrush x:Key="WarningLightBrush" Color="{StaticResource WarningLightColor}" />
     
     <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}" />
-    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="{StaticResource SidebarBackgroundColor}" />
+    <!-- High-Contrast Dark Sidebar in Light Mode -->
+    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#0F172A" />
 
     <!-- Premium Gradients and Modern Visual Brushes -->
     <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#5F56FD" Offset="0.0" />
+        <GradientStop Color="#6366F1" Offset="0.0" />
         <GradientStop Color="#8B5CF6" Offset="1.0" />
     </LinearGradientBrush>
     
@@ -62,12 +63,39 @@
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="SidebarGradientBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="#FFFFFF" Offset="0.0" />
-        <GradientStop Color="#F8FAFC" Offset="1.0" />
+        <GradientStop Color="#0F172A" Offset="0.0" />
+        <GradientStop Color="#1E1B4B" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <!-- Vibrant Soft Gradient Brushes for KPI Cards -->
+    <LinearGradientBrush x:Key="KPINumber1Brush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#EFF6FF" Offset="0.0" />
+        <GradientStop Color="#DBEAFE" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="KPINumber2Brush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#ECFDF5" Offset="0.0" />
+        <GradientStop Color="#D1FAE5" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="KPINumber3Brush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FFF7ED" Offset="0.0" />
+        <GradientStop Color="#FFEDD5" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="KPINumber4Brush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#F5F3FF" Offset="0.0" />
+        <GradientStop Color="#EDE9FE" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="KPINumber5Brush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#ECFDF5" Offset="0.0" />
+        <GradientStop Color="#D1FAE5" Offset="1.0" />
     </LinearGradientBrush>
 
     <SolidColorBrush x:Key="GlassBorderBrush" Color="#120F172A" />
-    <SolidColorBrush x:Key="CardGlowBrush" Color="#155F56FD" />
-    <SolidColorBrush x:Key="WindowGlowBrush" Color="#20000000" />
+    <SolidColorBrush x:Key="CardGlowBrush" Color="#106366F1" />
+    <SolidColorBrush x:Key="WindowGlowBrush" Color="#15000000" />
+    
+    <SolidColorBrush x:Key="DataGridHeaderBackgroundBrush" Color="#F1F5F9" />
+    <SolidColorBrush x:Key="DataGridAlternatingRowBrush" Color="#F8FAFC" />
+    <SolidColorBrush x:Key="DataGridRowHoverBrush" Color="#F1F5F9" />
+    <SolidColorBrush x:Key="DataGridRowSelectedBrush" Color="#EEF2FF" />
 
 </ResourceDictionary>

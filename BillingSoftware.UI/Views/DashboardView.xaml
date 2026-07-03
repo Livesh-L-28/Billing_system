@@ -25,7 +25,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Card 1: Today Sales Count -->
-            <Border Grid.Column="0" Style="{StaticResource ModernCard}" Margin="0,0,8,0">
+            <Border Grid.Column="0" Style="{StaticResource ModernCard}" Margin="0,0,8,0" Background="{DynamicResource KPINumber1Brush}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -37,13 +37,13 @@
                     </StackPanel>
                     <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="{DynamicResource AccentLightBrush}" VerticalAlignment="Center" HorizontalAlignment="Right">
                         <Path Data="M14 2H6C4.9 2 4.01 2.9 4.01 4L4 20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2M18 20H6V4H13V9H18V20Z" 
-                              Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                               Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
             </Border>
 
             <!-- Card 2: Today Sales Amount -->
-            <Border Grid.Column="1" Style="{StaticResource ModernCard}" Margin="8,0,8,0">
+            <Border Grid.Column="1" Style="{StaticResource ModernCard}" Margin="8,0,8,0" Background="{DynamicResource KPINumber2Brush}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -55,13 +55,13 @@
                     </StackPanel>
                     <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="{DynamicResource SuccessLightBrush}" VerticalAlignment="Center" HorizontalAlignment="Right">
                         <Path Data="M21 18V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5V6H12C10.9 6 10 6.9 10 8V16C10 17.1 10.9 18 12 18H21M12 16H22V8H12V16M16 13C15.4 13 15 12.6 15 12S15.4 11 16 11 17 11.4 17 12 16.6 13 16 13Z" 
-                              Fill="{DynamicResource SuccessBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                               Fill="{DynamicResource SuccessBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
             </Border>
 
             <!-- Card 3: Today GST Collected -->
-            <Border Grid.Column="2" Style="{StaticResource ModernCard}" Margin="8,0,8,0">
+            <Border Grid.Column="2" Style="{StaticResource ModernCard}" Margin="8,0,8,0" Background="{DynamicResource KPINumber3Brush}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -73,13 +73,13 @@
                     </StackPanel>
                     <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="{DynamicResource WarningLightBrush}" VerticalAlignment="Center" HorizontalAlignment="Right">
                         <Path Data="M19 3H5C3.89 3 3 3.89 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.89 20.1 3 19 3M19 19H5V5H19V19M7 10H9V17H7V10M11 13H13V17H11V13M15 7H17V17H15V7Z" 
-                              Fill="{DynamicResource WarningBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                               Fill="{DynamicResource WarningBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
             </Border>
 
             <!-- Card 4: Total Customers -->
-            <Border Grid.Column="3" Style="{StaticResource ModernCard}" Margin="8,0,8,0">
+            <Border Grid.Column="3" Style="{StaticResource ModernCard}" Margin="8,0,8,0" Background="{DynamicResource KPINumber4Brush}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -91,13 +91,13 @@
                     </StackPanel>
                     <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="{DynamicResource AccentLightBrush}" VerticalAlignment="Center" HorizontalAlignment="Right">
                         <Path Data="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 1.34 5 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" 
-                              Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                               Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
             </Border>
 
             <!-- Card 5: Total Products -->
-            <Border Grid.Column="4" Style="{StaticResource ModernCard}" Margin="8,0,0,0">
+            <Border Grid.Column="4" Style="{StaticResource ModernCard}" Margin="8,0,0,0" Background="{DynamicResource KPINumber5Brush}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -131,7 +131,10 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,0,0,10">
-                        <TextBlock Text="Low Stock Warnings (Reorder Alerts)" Style="{StaticResource Header2}" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border Width="4" Height="18" Background="{DynamicResource AccentGradientBrush}" CornerRadius="2" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Low Stock Warnings (Reorder Alerts)" Style="{StaticResource Header2}" VerticalAlignment="Center"/>
+                        </StackPanel>
                         <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" 
                               Fill="{DynamicResource DangerBrush}" 
                               Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Center"/>
@@ -156,7 +159,10 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="Recent System Activity Trails" Style="{StaticResource Header2}" Margin="0,0,0,10"/>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+                        <Border Width="4" Height="18" Background="{DynamicResource AccentGradientBrush}" CornerRadius="2" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Recent System Activity Trails" Style="{StaticResource Header2}" VerticalAlignment="Center"/>
+                    </StackPanel>
 
                     <DataGrid Grid.Row="1" ItemsSource="{Binding RecentLogs}" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>

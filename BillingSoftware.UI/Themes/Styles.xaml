@@ -4,6 +4,12 @@
     <!-- Global Font & Control Constants -->
     <FontFamily x:Key="MainFont">Segoe UI, Inter, Roboto</FontFamily>
 
+    <!-- Default TextBlock Render Hint -->
+    <Style TargetType="TextBlock">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+    </Style>
+
     <!-- Typography Styles -->
     <Style x:Key="Header1" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource MainFont}" />
@@ -35,12 +41,12 @@
     <Style x:Key="ModernCard" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="1.5" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="16" />
         <Setter Property="Padding" Value="20" />
         <Setter Property="Effect">
             <Setter.Value>
-                <DropShadowEffect BlurRadius="20" Color="#000000" Opacity="0.05" ShadowDepth="2" Direction="270" />
+                <DropShadowEffect BlurRadius="20" Color="#000000" Opacity="0.04" ShadowDepth="2" Direction="270" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -71,13 +77,13 @@
                                 Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="10">
+                                CornerRadius="12">
                             <Grid>
                                 <!-- Hover Glow Overlay -->
                                 <Border x:Name="hoverOverlay" 
                                         Background="{DynamicResource AccentHoverGradientBrush}" 
                                         Opacity="0" 
-                                        CornerRadius="10" />
+                                        CornerRadius="12" />
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
                             </Grid>
                         </Border>
@@ -146,12 +152,12 @@
                                 Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="10">
+                                CornerRadius="12">
                             <Grid>
                                 <Border x:Name="hoverOverlay" 
                                         Background="{DynamicResource BorderBrush}" 
                                         Opacity="0" 
-                                        CornerRadius="10" />
+                                        CornerRadius="12" />
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
                             </Grid>
                         </Border>
@@ -216,12 +222,12 @@
                     <Grid>
                         <Border x:Name="border" 
                                 Background="{TemplateBinding Background}" 
-                                CornerRadius="10">
+                                CornerRadius="12">
                             <Grid>
                                 <Border x:Name="hoverOverlay" 
                                         Background="{DynamicResource DangerHoverBrush}" 
                                         Opacity="0" 
-                                        CornerRadius="10" />
+                                        CornerRadius="12" />
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" />
                             </Grid>
                         </Border>
@@ -291,16 +297,16 @@
                                 Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="10" />
+                                CornerRadius="12" />
                         
                         <!-- Focused Shadow/Glow State Border -->
                         <Border x:Name="focusBorder" 
                                 BorderBrush="{DynamicResource AccentBrush}" 
                                 BorderThickness="1.5" 
-                                CornerRadius="10"
+                                CornerRadius="12"
                                 Opacity="0">
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="8" Color="{DynamicResource AccentColor}" Opacity="0.15" ShadowDepth="0" />
+                                <DropShadowEffect BlurRadius="10" Color="{DynamicResource AccentColor}" Opacity="0.2" ShadowDepth="0" />
                             </Border.Effect>
                         </Border>
                         
@@ -309,6 +315,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource BorderHoverBrush}" />
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource BackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsFocused" Value="True">
                             <Trigger.EnterActions>
@@ -356,13 +363,13 @@
                                 Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="10" />
+                                CornerRadius="12" />
                         
                         <!-- Focused Shadow/Glow State Border -->
                         <Border x:Name="focusBorder" 
                                 BorderBrush="{DynamicResource AccentBrush}" 
                                 BorderThickness="1.5" 
-                                CornerRadius="10"
+                                CornerRadius="12"
                                 Opacity="0">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="8" Color="{DynamicResource AccentColor}" Opacity="0.15" ShadowDepth="0" />
@@ -404,7 +411,7 @@
     <!-- Sidebar Navigation Button -->
     <Style x:Key="SidebarButton" TargetType="RadioButton">
         <Setter Property="Height" Value="42" />
-        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+        <Setter Property="Foreground" Value="#94A3B8" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="GroupName" Value="Sidebar" />
@@ -455,8 +462,8 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                            <Setter TargetName="border" Property="Background" Value="{DynamicResource BorderBrush}" />
+                            <Setter Property="Foreground" Value="#F8FAFC" />
+                            <Setter TargetName="border" Property="Background" Value="#1E293B" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -475,8 +482,8 @@
                             </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentLightBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="border" Property="Background" Value="#312E81" />
+                            <Setter Property="Foreground" Value="#FFFFFF" />
                             <Setter TargetName="indicator" Property="Visibility" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -490,10 +497,12 @@
         <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="1.5" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="RowBackground" Value="Transparent" />
-        <Setter Property="AlternatingRowBackground" Value="Transparent" />
-        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="AlternatingRowBackground" Value="{DynamicResource DataGridAlternatingRowBrush}" />
+        <Setter Property="AlternationCount" Value="2" />
+        <Setter Property="GridLinesVisibility" Value="Horizontal" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource BorderBrush}" />
         <Setter Property="RowHeaderWidth" Value="0" />
         <Setter Property="AutoGenerateColumns" Value="False" />
         <Setter Property="CanUserAddRows" Value="False" />
@@ -501,34 +510,36 @@
         <Setter Property="SelectionMode" Value="Single" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontFamily" Value="{StaticResource MainFont}" />
+        <Setter Property="HeadersVisibility" Value="Column" />
     </Style>
 
     <Style TargetType="DataGridRow">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0,0,0,1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="Padding" Value="0,4" />
-        <Setter Property="Margin" Value="4,0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0,8" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MinHeight" Value="40" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" />
+                <Setter Property="Background" Value="{DynamicResource DataGridRowHoverBrush}" />
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" />
+                <Setter Property="Background" Value="{DynamicResource DataGridRowSelectedBrush}" />
                 <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="DataGridColumnHeader">
-        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource DataGridHeaderBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Padding" Value="14,12" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-        <Setter Property="BorderThickness" Value="0,0,0,1.5" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
         <Setter Property="FontFamily" Value="{StaticResource MainFont}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style TargetType="DataGridCell">
@@ -558,7 +569,7 @@
                             Background="{DynamicResource SurfaceBrush}" 
                             BorderBrush="{DynamicResource BorderBrush}" 
                             BorderThickness="1.5" 
-                            CornerRadius="10" 
+                            CornerRadius="12" 
                             SnapsToDevicePixels="true">
                         <Border x:Name="splitBorder" 
                                 Width="30" 
@@ -630,7 +641,7 @@
                                     CornerRadius="8" 
                                     Margin="0,4,0,4">
                                 <Border.Effect>
-                                    <DropShadowEffect BlurRadius="10" Color="#000000" Opacity="0.08" ShadowDepth="2" Direction="270"/>
+                                    <DropShadowEffect BlurRadius="15" Color="#000000" Opacity="0.12" ShadowDepth="3" Direction="270"/>
                                 </Border.Effect>
                                 <ScrollViewer x:Name="DropDownScrollViewer">
                                     <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
@@ -732,7 +743,7 @@
                             Background="{TemplateBinding Background}" 
                             BorderBrush="{TemplateBinding BorderBrush}" 
                             BorderThickness="{TemplateBinding BorderThickness}" 
-                            CornerRadius="8">
+                            CornerRadius="12">
                         <Grid x:Name="PART_Root">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -901,15 +912,14 @@
         </Setter>
     </Style>
 
-    <!-- Modern TabItem -->
+    <!-- Modern TabItem (Pill Style) -->
     <Style TargetType="TabItem">
         <Setter Property="FontFamily" Value="{StaticResource MainFont}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0,0,0,3" />
-        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="16,8" />
         <Setter Property="Margin" Value="0,0,8,0" />
         <Setter Property="Cursor" Value="Hand" />
@@ -918,17 +928,16 @@
                 <ControlTemplate TargetType="TabItem">
                     <Border x:Name="border" 
                             Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            CornerRadius="18" 
                             Padding="{TemplateBinding Padding}"
                             SnapsToDevicePixels="True">
                         <ContentPresenter x:Name="contentPresenter" 
-                                          ContentSource="Header" 
-                                          Focusable="False"
-                                          HorizontalAlignment="Center" 
-                                          VerticalAlignment="Center" 
-                                          RecognizesAccessKey="True" 
-                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                           ContentSource="Header" 
+                                           Focusable="False"
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" 
+                                           RecognizesAccessKey="True" 
+                                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -936,8 +945,8 @@
                             <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentLightBrush}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}" />
+                            <Setter Property="Foreground" Value="White" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />

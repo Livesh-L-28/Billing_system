@@ -184,7 +184,6 @@ public class MainWindowViewModel : ViewModelBase
     private T ResolveViewModel<T>() where T : ViewModelBase
     {
         var vm = _serviceProvider.GetRequiredService<T>();
-        vm.Title = Title;
         return vm;
     }
 }

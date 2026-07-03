@@ -17,3 +17,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Backup\obj\Debug\net8.0\Billin
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Backup\obj\Debug\net8.0\refint\BillingSoftware.Backup.dll
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Backup\obj\Debug\net8.0\BillingSoftware.Backup.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Backup\obj\Debug\net8.0\ref\BillingSoftware.Backup.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Backup\obj\Debug\net8.0\BillingSoftware.Backup.sourcelink.json

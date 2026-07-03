@@ -36,3 +36,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Printing\obj\Debug\net8.0\Bill
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Printing\obj\Debug\net8.0\refint\BillingSoftware.Printing.dll
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Printing\obj\Debug\net8.0\BillingSoftware.Printing.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Printing\obj\Debug\net8.0\ref\BillingSoftware.Printing.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Printing\obj\Debug\net8.0\BillingSoftware.Printing.sourcelink.json

@@ -166,3 +166,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Tests\obj\Debug\net8.0\refint\
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Tests\obj\Debug\net8.0\BillingSoftware.Tests.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Tests\obj\Debug\net8.0\BillingSoftware.Tests.genruntimeconfig.cache
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Tests\obj\Debug\net8.0\ref\BillingSoftware.Tests.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Tests\obj\Debug\net8.0\BillingSoftware.Tests.sourcelink.json

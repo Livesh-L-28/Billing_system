@@ -39,8 +39,8 @@
             <Grid Grid.Column="0">
                 <Grid.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#5F56FD" Offset="0.0" />
-                        <GradientStop Color="#312E81" Offset="1.0" />
+                        <GradientStop Color="{DynamicResource AccentColor}" Offset="0.0" />
+                        <GradientStop Color="#1E1B4B" Offset="1.0" />
                     </LinearGradientBrush>
                 </Grid.Background>
                 

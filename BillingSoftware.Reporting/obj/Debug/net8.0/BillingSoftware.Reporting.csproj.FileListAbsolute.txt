@@ -17,3 +17,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Reporting\obj\Debug\net8.0\Bil
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Reporting\obj\Debug\net8.0\refint\BillingSoftware.Reporting.dll
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Reporting\obj\Debug\net8.0\BillingSoftware.Reporting.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Reporting\obj\Debug\net8.0\ref\BillingSoftware.Reporting.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Reporting\obj\Debug\net8.0\BillingSoftware.Reporting.sourcelink.json

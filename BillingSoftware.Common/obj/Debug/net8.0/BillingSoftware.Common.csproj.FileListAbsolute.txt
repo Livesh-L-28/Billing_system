@@ -9,3 +9,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Debug\net8.0\Billin
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Debug\net8.0\refint\BillingSoftware.Common.dll
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Debug\net8.0\BillingSoftware.Common.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Debug\net8.0\ref\BillingSoftware.Common.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Debug\net8.0\BillingSoftware.Common.sourcelink.json

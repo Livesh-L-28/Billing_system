@@ -19,3 +19,4 @@ C:\Users\katana\Downloads\BILLING\BillingSoftware.Infrastructure\obj\Debug\net8.
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Infrastructure\obj\Debug\net8.0\refint\BillingSoftware.Infrastructure.dll
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Infrastructure\obj\Debug\net8.0\BillingSoftware.Infrastructure.pdb
 C:\Users\katana\Downloads\BILLING\BillingSoftware.Infrastructure\obj\Debug\net8.0\ref\BillingSoftware.Infrastructure.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Infrastructure\obj\Debug\net8.0\BillingSoftware.Infrastructure.sourcelink.json
