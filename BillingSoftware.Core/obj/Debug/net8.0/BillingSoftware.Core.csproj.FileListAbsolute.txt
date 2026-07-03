@@ -1,0 +1,15 @@
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\bin\Debug\net8.0\BillingSoftware.Core.deps.json
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\bin\Debug\net8.0\BillingSoftware.Core.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\bin\Debug\net8.0\BillingSoftware.Core.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\bin\Debug\net8.0\BillingSoftware.Common.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\bin\Debug\net8.0\BillingSoftware.Common.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.csproj.AssemblyReference.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.AssemblyInfoInputs.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.AssemblyInfo.cs
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.csproj.CoreCompileInputs.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingS.028B12EF.Up2Date
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\refint\BillingSoftware.Core.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\BillingSoftware.Core.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Core\obj\Debug\net8.0\ref\BillingSoftware.Core.dll

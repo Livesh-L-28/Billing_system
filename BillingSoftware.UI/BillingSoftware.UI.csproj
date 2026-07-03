@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BillingSoftware.Infrastructure\BillingSoftware.Infrastructure.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Application\BillingSoftware.Application.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Core\BillingSoftware.Core.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Database\BillingSoftware.Database.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Reporting\BillingSoftware.Reporting.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Printing\BillingSoftware.Printing.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Backup\BillingSoftware.Backup.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Common\BillingSoftware.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+</Project>

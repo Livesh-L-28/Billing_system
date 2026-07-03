@@ -1,0 +1,11 @@
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\bin\Release\net8.0\BillingSoftware.Common.deps.json
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\bin\Release\net8.0\BillingSoftware.Common.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\bin\Release\net8.0\BillingSoftware.Common.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\BillingSoftware.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\BillingSoftware.Common.AssemblyInfoInputs.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\BillingSoftware.Common.AssemblyInfo.cs
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\BillingSoftware.Common.csproj.CoreCompileInputs.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\BillingSoftware.Common.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\refint\BillingSoftware.Common.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\BillingSoftware.Common.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Common\obj\Release\net8.0\ref\BillingSoftware.Common.dll

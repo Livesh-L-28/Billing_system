@@ -1,0 +1,184 @@
+<UserControl x:Class="BillingSoftware.UI.Views.CustomerListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BillingSoftware.UI.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- List Grid Column -->
+            <ColumnDefinition Width="*" />
+            <!-- Slide-out Editor Column -->
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT CUSTOMER LIST PANEL -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <!-- Search & Actions Top Bar -->
+                <RowDefinition Height="Auto" />
+                <!-- Customers Data Grid -->
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Search & Actions bar -->
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Search Input -->
+                <Grid Grid.Column="0">
+                    <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" 
+                             Padding="28,4,8,4" Height="36" VerticalContentAlignment="Center"/>
+                    <!-- Search Icon (Vector Path) overlay -->
+                    <Path Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L18.71,18L17.3,19.41L13.03,15.14C11.89,16.11 10.41,16.7 8.5,16.7A6.5,6.5 0 0,1 2,9.5A6.5,6.5 0 0,1 8.5,3M8.5,5C6,5 4,7 4,9.5C4,12 6,14 8.5,14C11,14 13,12 13,9.5C13,7 11,5 8.5,5Z" 
+                          Fill="{DynamicResource TextMutedBrush}" 
+                          Width="14" Height="14" Stretch="Uniform" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" IsHitTestVisible="False"/>
+                </Grid>
+
+                <!-- Action buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Add New" Command="{Binding AddNewCommand}" Margin="0,0,8,0"/>
+                    <Button Content="Edit" Command="{Binding EditSelectedCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0"/>
+                    <Button Content="Delete" Command="{Binding DeleteCustomerCommand}" Style="{StaticResource DangerButton}" Margin="0,0,8,0"/>
+                    <Button Content="Import Excel" Command="{Binding ImportExcelCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0"/>
+                    <Button Content="Export Excel" Command="{Binding ExportExcelCommand}" Style="{StaticResource SecondaryButton}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- DataGrid list -->
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Customer Name" Binding="{Binding Name}" Width="2*" />
+                    <DataGridTextColumn Header="Mobile No" Binding="{Binding Mobile}" Width="*" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding CustomerType}" Width="*" />
+                    <DataGridTextColumn Header="GSTIN" Binding="{Binding GSTIN}" Width="1.5*" />
+                    <DataGridTextColumn Header="State" Binding="{Binding State}" Width="*" />
+                    <DataGridTextColumn Header="Outstanding (₹)" Binding="{Binding OutstandingBalance, StringFormat={}{0:N2}}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- RIGHT EDIT FORM CARD -->
+        <Border Grid.Column="1">
+            <Border.Style>
+                <Style TargetType="Border" BasedOn="{StaticResource ModernCard}">
+                    <Setter Property="Width" Value="360" />
+                    <Setter Property="Margin" Value="15,0,0,0" />
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEditing}" Value="False">
+                            <Setter Property="Width" Value="0" />
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Form Header -->
+                <TextBlock Grid.Row="0" Text="Customer Details" Style="{StaticResource Header2}" Margin="0,0,0,15" />
+
+                <!-- Form Scrollable fields -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+                    <StackPanel>
+                        <!-- Name -->
+                        <TextBlock Text="Customer Name *" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12"/>
+
+                        <!-- Mobile -->
+                        <TextBlock Text="Mobile Number *" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormMobile, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12"/>
+
+                        <!-- Email -->
+                        <TextBlock Text="Email Address" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormEmail, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12"/>
+
+                        <!-- Type -->
+                        <TextBlock Text="GST Registration Type" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding CustomerTypes}" SelectedItem="{Binding FormCustomerType}" Margin="0,0,0,12"/>
+
+                        <!-- GSTIN -->
+                        <TextBlock Text="GSTIN" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormGSTIN, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" MaxLength="15"/>
+
+                        <!-- PAN -->
+                        <TextBlock Text="PAN (Permanent A/C No)" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormPAN, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" MaxLength="10"/>
+
+                        <!-- State -->
+                        <TextBlock Text="State *" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding States}" SelectedItem="{Binding FormState}" Margin="0,0,0,12"/>
+
+                        <!-- Address -->
+                        <TextBlock Text="Billing Address" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding FormAddress, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" AcceptsReturn="True" Height="50" VerticalContentAlignment="Top" Padding="8,4"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- City -->
+                            <StackPanel Grid.Column="0" Margin="0,0,6,12">
+                                <TextBlock Text="City" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                <TextBox Text="{Binding FormCity, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+
+                            <!-- Pincode -->
+                            <StackPanel Grid.Column="1" Margin="6,0,0,12">
+                                <TextBlock Text="Pincode" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                <TextBox Text="{Binding FormPincode, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Opening Balance -->
+                            <StackPanel Grid.Column="0" Margin="0,0,6,12">
+                                <TextBlock Text="Opening Balance" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                <TextBox Text="{Binding FormOpeningBalance, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+
+                            <!-- Credit Days -->
+                            <StackPanel Grid.Column="1" Margin="6,0,0,12">
+                                <TextBlock Text="Credit Days" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                <TextBox Text="{Binding FormCreditDays, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Status -->
+                        <CheckBox IsChecked="{Binding FormIsActive}" Content="Is Active / Enabled" Margin="0,5,0,0" FontSize="13" FontFamily="{StaticResource MainFont}"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Form Save & Cancel Buttons -->
+                <Grid Grid.Row="2" Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Content="Save" Command="{Binding SaveCustomerCommand}" Grid.Column="0" Margin="0,0,8,0"/>
+                    <Button Content="Cancel" Command="{Binding CancelEditCommand}" Style="{StaticResource SecondaryButton}" Grid.Column="1" Margin="8,0,0,0"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

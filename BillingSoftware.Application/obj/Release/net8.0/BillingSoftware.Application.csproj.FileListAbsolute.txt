@@ -1,0 +1,17 @@
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\bin\Release\net8.0\BillingSoftware.Application.deps.json
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\bin\Release\net8.0\BillingSoftware.Application.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\bin\Release\net8.0\BillingSoftware.Application.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\bin\Release\net8.0\BillingSoftware.Common.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\bin\Release\net8.0\BillingSoftware.Core.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\bin\Release\net8.0\BillingSoftware.Core.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\bin\Release\net8.0\BillingSoftware.Common.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingSoftware.Application.csproj.AssemblyReference.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingSoftware.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingSoftware.Application.AssemblyInfoInputs.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingSoftware.Application.AssemblyInfo.cs
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingSoftware.Application.csproj.CoreCompileInputs.cache
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingS.8C56CEFF.Up2Date
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingSoftware.Application.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\refint\BillingSoftware.Application.dll
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\BillingSoftware.Application.pdb
+C:\Users\katana\Downloads\BILLING\BillingSoftware.Application\obj\Release\net8.0\ref\BillingSoftware.Application.dll

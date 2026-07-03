@@ -1,0 +1,130 @@
+<Window x:Class="BillingSoftware.UI.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BillingSoftware.UI"
+        mc:Ignorable="d" 
+        Title="TexVibe GST Billing Software - Login" 
+        Height="500" Width="800"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" 
+                      ResizeBorderThickness="0" 
+                      CornerRadius="0" 
+                      GlassFrameThickness="1" 
+                      UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    
+    <Border CornerRadius="16" 
+            Background="{DynamicResource SurfaceBrush}" 
+            BorderBrush="{DynamicResource GlassBorderBrush}" 
+            BorderThickness="1.5"
+            ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25" Color="#000000" Opacity="0.15" ShadowDepth="4" Direction="270" />
+        </Border.Effect>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Accent Banner Panel -->
+            <Grid Grid.Column="0">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#5F56FD" Offset="0.0" />
+                        <GradientStop Color="#312E81" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Grid.Background>
+                
+                <!-- Geometric pattern overlays using Path geometries -->
+                <Canvas Opacity="0.08" ClipToBounds="True">
+                    <Path Fill="White" Data="M-100,-100 Q 150,0 200,350 T 400,600 L 0,600 Z"/>
+                    <Path Fill="White" Data="M 150,-50 Q 300,200 100,450 T 400,600" Stroke="White" StrokeThickness="4"/>
+                    <Path Fill="White" Data="M-50,200 Q 100,50 350,150 T 400,500 L -50,600 Z"/>
+                </Canvas>
+                
+                <StackPanel VerticalAlignment="Center" Margin="35">
+                    <TextBlock Text="TEXVIBE" Foreground="White" FontSize="36" FontWeight="Black" FontFamily="{StaticResource MainFont}"/>
+                    <TextBlock Text="GST Billing Software" Foreground="#C7D2FE" FontSize="16" FontWeight="Bold" Margin="0,5,0,30" FontFamily="{StaticResource MainFont}"/>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,8">
+                        <Path Data="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="Offline secure SQLite database" Foreground="#E2E8F0" Margin="10,0,0,0" FontSize="13" TextWrapping="Wrap" FontFamily="{StaticResource MainFont}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,8">
+                        <Path Data="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="High-speed barcoded invoicing" Foreground="#E2E8F0" Margin="10,0,0,0" FontSize="13" TextWrapping="Wrap" FontFamily="{StaticResource MainFont}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,8">
+                        <Path Data="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="GSTR-1, GSTR-3B tax reports" Foreground="#E2E8F0" Margin="10,0,0,0" FontSize="13" TextWrapping="Wrap" FontFamily="{StaticResource MainFont}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,8">
+                        <Path Data="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="One-click backup &amp; restore" Foreground="#E2E8F0" Margin="10,0,0,0" FontSize="13" TextWrapping="Wrap" FontFamily="{StaticResource MainFont}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+                <TextBlock Text="Version 1.0.0" Foreground="#818CF8" Opacity="0.8" FontSize="11" Margin="35,0,0,20" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontFamily="{StaticResource MainFont}"/>
+            </Grid>
+
+            <!-- Right Form Panel -->
+            <Grid Grid.Column="1" Background="{DynamicResource SurfaceBrush}">
+                <!-- Custom Titlebar overlay buttons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,5,5,0">
+                    <Button Style="{StaticResource WindowMinButton}" Click="MinimizeButton_Click" ToolTip="Minimize"/>
+                    <Button Style="{StaticResource WindowCloseButton}" Click="CloseButton_Click" ToolTip="Close"/>
+                </StackPanel>
+
+                <StackPanel VerticalAlignment="Center" Margin="45,20">
+                    <TextBlock Text="Welcome Back" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,4" FontFamily="{StaticResource MainFont}"/>
+                    <TextBlock Text="Enter user credentials to access ledger" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,24" FontFamily="{StaticResource MainFont}"/>
+
+                    <!-- Username -->
+                    <TextBlock Text="Username" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,6" FontFamily="{StaticResource MainFont}"/>
+                    <TextBox x:Name="txtUsername" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,16" TabIndex="1"/>
+
+                    <!-- Password -->
+                    <TextBlock Text="Password" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,6" FontFamily="{StaticResource MainFont}"/>
+                    <PasswordBox x:Name="txtPassword" Margin="0,0,0,16" TabIndex="2"/>
+
+                    <!-- Financial Year -->
+                    <TextBlock Text="Financial Year" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,6" FontFamily="{StaticResource MainFont}"/>
+                    <ComboBox ItemsSource="{Binding FinancialYears}" 
+                              SelectedItem="{Binding SelectedFinancialYear}" 
+                              DisplayMemberPath="Name" 
+                              Margin="0,0,0,24" TabIndex="3"/>
+
+                    <!-- Error Message -->
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DangerBrush}" FontSize="12" Margin="0,0,0,16" TextWrapping="Wrap" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}, FallbackValue=Collapsed}" Height="34" FontFamily="{StaticResource MainFont}"/>
+
+                    <!-- Buttons -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Login" 
+                                Command="{Binding LoginCommand}" 
+                                CommandParameter="{Binding ElementName=txtPassword}" 
+                                IsDefault="True" 
+                                Grid.Column="0" 
+                                Margin="0,0,8,0" TabIndex="4"/>
+                        <Button Content="Exit" 
+                                Style="{StaticResource SecondaryButton}" 
+                                Click="ExitButton_Click" 
+                                Grid.Column="1" 
+                                Margin="8,0,0,0" TabIndex="5"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
