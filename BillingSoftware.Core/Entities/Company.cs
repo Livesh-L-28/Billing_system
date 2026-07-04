@@ -14,6 +14,7 @@ public class Company
     public string BankName { get; set; } = string.Empty;
     public string BankAccountNumber { get; set; } = string.Empty;
     public string BankIFSC { get; set; } = string.Empty;
+    public string BankBranch { get; set; } = "Main Branch";
     public string TermsAndConditions { get; set; } = string.Empty;
     public string? LogoPath { get; set; }
     public string? SignaturePath { get; set; }

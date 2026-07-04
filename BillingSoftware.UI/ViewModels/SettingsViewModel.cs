@@ -81,6 +81,13 @@ public class SettingsViewModel : ViewModelBase
         set => SetProperty(ref _bankIFSC, value);
     }
 
+    private string _bankBranch = string.Empty;
+    public string BankBranch
+    {
+        get => _bankBranch;
+        set => SetProperty(ref _bankBranch, value);
+    }
+
     private string _termsAndConditions = string.Empty;
     public string TermsAndConditions
     {
@@ -206,6 +213,7 @@ public class SettingsViewModel : ViewModelBase
                 BankName = company.BankName;
                 BankAccountNumber = company.BankAccountNumber;
                 BankIFSC = company.BankIFSC;
+                BankBranch = company.BankBranch;
                 TermsAndConditions = company.TermsAndConditions;
                 SelectedState = States.Contains(company.State) ? company.State : "Maharashtra";
                 LogoPath = company.LogoPath;
@@ -263,6 +271,7 @@ public class SettingsViewModel : ViewModelBase
             company.BankName = BankName;
             company.BankAccountNumber = BankAccountNumber;
             company.BankIFSC = BankIFSC;
+            company.BankBranch = BankBranch;
             company.TermsAndConditions = TermsAndConditions;
             company.State = SelectedState;
             company.LogoPath = LogoPath;

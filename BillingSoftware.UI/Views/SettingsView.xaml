@@ -103,22 +103,29 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Bank Name -->
-                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
                                         <TextBlock Text="Bank Name" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,5" />
                                         <TextBox Text="{Binding BankName, UpdateSourceTrigger=PropertyChanged}" />
                                     </StackPanel>
 
+                                    <!-- Bank Branch -->
+                                    <StackPanel Grid.Column="1" Margin="8,0,8,0">
+                                        <TextBlock Text="Bank Branch" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,5" />
+                                        <TextBox Text="{Binding BankBranch, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+
                                     <!-- Account Number -->
-                                    <StackPanel Grid.Column="1" Margin="10,0,10,0">
+                                    <StackPanel Grid.Column="2" Margin="8,0,8,0">
                                         <TextBlock Text="Account Number" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,5" />
                                         <TextBox Text="{Binding BankAccountNumber, UpdateSourceTrigger=PropertyChanged}" />
                                     </StackPanel>
 
                                     <!-- IFSC -->
-                                    <StackPanel Grid.Column="2" Margin="10,0,0,0">
+                                    <StackPanel Grid.Column="3" Margin="8,0,0,0">
                                         <TextBlock Text="IFSC Code" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,5" />
                                         <TextBox Text="{Binding BankIFSC, UpdateSourceTrigger=PropertyChanged}" />
                                     </StackPanel>

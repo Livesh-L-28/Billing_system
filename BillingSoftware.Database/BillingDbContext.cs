@@ -93,6 +93,7 @@ public class BillingDbContext : DbContext
             entity.Property(e => e.GSTIN).IsRequired().HasMaxLength(15);
             entity.Property(e => e.PAN).IsRequired().HasMaxLength(10);
             entity.Property(e => e.State).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.BankBranch).IsRequired().HasDefaultValue("Main Branch");
         });
 
         modelBuilder.Entity<FinancialYear>(entity =>

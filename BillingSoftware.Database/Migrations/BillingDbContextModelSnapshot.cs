@@ -117,6 +117,12 @@ namespace BillingSoftware.Database.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("BankBranch")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Main Branch");
+
                     b.Property<string>("BankIFSC")
                         .IsRequired()
                         .HasColumnType("TEXT");

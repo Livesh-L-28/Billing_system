@@ -26,6 +26,7 @@
     <ProjectReference Include="..\BillingSoftware.Infrastructure\BillingSoftware.Infrastructure.csproj" />
     <ProjectReference Include="..\BillingSoftware.Database\BillingSoftware.Database.csproj" />
     <ProjectReference Include="..\BillingSoftware.Common\BillingSoftware.Common.csproj" />
+    <ProjectReference Include="..\BillingSoftware.Printing\BillingSoftware.Printing.csproj" />
   </ItemGroup>
 
 </Project>
