@@ -21,4 +21,6 @@ public class Product
     // Navigation properties
     public virtual Category? Category { get; set; }
     public virtual Unit? Unit { get; set; }
+
+    public override string ToString() => Name;
 }

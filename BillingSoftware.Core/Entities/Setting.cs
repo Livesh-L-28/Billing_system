@@ -9,6 +9,7 @@ public class Setting
     public string InvoiceFormat { get; set; } = "{Prefix}-{Year}-{Number:D4}"; // e.g. INV-2026-0001
     public bool EnableRoundOff { get; set; } = true;
     public string Theme { get; set; } = "Light"; // Light or Dark
-    public string BackupFolderPath { get; set; } = string.Empty;
-    public string DefaultPrinterName { get; set; } = string.Empty;
+    public string? BackupFolderPath { get; set; } = string.Empty;
+    public string? DefaultPrinterName { get; set; } = string.Empty;
+    public string? InvoiceStorageFolderPath { get; set; } = string.Empty;
 }

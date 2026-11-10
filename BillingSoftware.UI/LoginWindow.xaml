@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BillingSoftware.UI"
         mc:Ignorable="d" 
-        Title="TexVibe GST Billing Software - Login" 
+        Title="Bill Soft GST Billing Software - Login" 
         Height="500" Width="800"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
@@ -52,7 +52,7 @@
                 </Canvas>
                 
                 <StackPanel VerticalAlignment="Center" Margin="35">
-                    <TextBlock Text="TEXVIBE" Foreground="White" FontSize="36" FontWeight="Black" FontFamily="{StaticResource MainFont}"/>
+                    <TextBlock Text="BILL SOFT" Foreground="White" FontSize="36" FontWeight="Black" FontFamily="{StaticResource MainFont}"/>
                     <TextBlock Text="GST Billing Software" Foreground="#C7D2FE" FontSize="16" FontWeight="Bold" Margin="0,5,0,30" FontFamily="{StaticResource MainFont}"/>
                     
                     <StackPanel Orientation="Horizontal" Margin="0,8">
@@ -96,11 +96,11 @@
                     <PasswordBox x:Name="txtPassword" Margin="0,0,0,16" TabIndex="2"/>
 
                     <!-- Financial Year -->
-                    <TextBlock Text="Financial Year" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,6" FontFamily="{StaticResource MainFont}"/>
+                    <TextBlock Text="Financial Year" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,6" FontFamily="{StaticResource MainFont}" Visibility="Collapsed"/>
                     <ComboBox ItemsSource="{Binding FinancialYears}" 
                               SelectedItem="{Binding SelectedFinancialYear}" 
                               DisplayMemberPath="Name" 
-                              Margin="0,0,0,24" TabIndex="3"/>
+                              Margin="0,0,0,24" TabIndex="3" Visibility="Collapsed"/>
 
                     <!-- Error Message -->
                     <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DangerBrush}" FontSize="12" Margin="0,0,0,16" TextWrapping="Wrap" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}, FallbackValue=Collapsed}" Height="34" FontFamily="{StaticResource MainFont}"/>

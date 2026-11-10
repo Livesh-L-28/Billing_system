@@ -26,15 +26,27 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>false</SelfContained>
+    <ApplicationIcon>app_icon.ico</ApplicationIcon>
+
+    <!-- Publish Settings -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <RunCommand>$(MSBuildThisFileDirectory)bin\$(Configuration)\net8.0-windows\win-x64\publish\BillingSoftware.UI.exe</RunCommand>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+
+    <RunCommand Condition="'$(Configuration)' == 'Release'">$(MSBuildThisFileDirectory)bin\$(Configuration)\net8.0-windows\win-x64\publish\BillingSoftware.UI.exe</RunCommand>
+    <RunCommand Condition="'$(Configuration)' != 'Release'">$(MSBuildThisFileDirectory)bin\$(Configuration)\net8.0-windows\win-x64\BillingSoftware.UI.exe</RunCommand>
   </PropertyGroup>
 
-  <Target Name="PublishSingleFileOnBuild" AfterTargets="Build" Condition="'$(BuildingSingleFile)' != 'true'">
-    <Message Text="Automatically publishing single-file executable to bypass Smart App Control..." Importance="high" />
-    <Exec Command="dotnet publish &quot;$(MSBuildProjectFullPath)&quot; -c $(Configuration) -r win-x64 --self-contained false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:BuildingSingleFile=true" />
+  <Target Name="PublishSingleFileOnBuild"
+          AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Release' And '$(BuildingSingleFile)' != 'true'">
+
+    <Message Text="Publishing self-contained single-file executable..."
+             Importance="high" />
+
+    <Exec Command="dotnet publish &quot;$(MSBuildProjectFullPath)&quot; -c $(Configuration) -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:BuildingSingleFile=true" />
+
   </Target>
 
 </Project>

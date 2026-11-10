@@ -10,6 +10,7 @@ public class User
     public string Salt { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public int RoleId { get; set; }
+    public int CompanyId { get; set; } = 1;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -277,7 +277,8 @@ public class CustomerListViewModel : ViewModelBase
             return;
         }
 
-        if (FormCustomerType == "Registered" && (string.IsNullOrWhiteSpace(FormGSTIN) || FormGSTIN.Length != 15))
+        string cleanGstin = FormGSTIN?.Trim() ?? string.Empty;
+        if (FormCustomerType == "Registered" && (string.IsNullOrWhiteSpace(cleanGstin) || cleanGstin.Length != 15))
         {
             System.Windows.MessageBox.Show("A valid 15-digit GSTIN is required for Registered customers.", "Validation Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             return;
@@ -303,15 +304,15 @@ public class CustomerListViewModel : ViewModelBase
                 }
             }
 
-            customer.Name = FormName;
-            customer.GSTIN = FormGSTIN;
-            customer.PAN = FormPAN;
-            customer.Mobile = FormMobile;
-            customer.Email = FormEmail;
-            customer.Address = FormAddress;
-            customer.City = FormCity;
+            customer.Name = FormName?.Trim() ?? string.Empty;
+            customer.GSTIN = cleanGstin;
+            customer.PAN = FormPAN?.Trim() ?? string.Empty;
+            customer.Mobile = FormMobile?.Trim() ?? string.Empty;
+            customer.Email = FormEmail?.Trim() ?? string.Empty;
+            customer.Address = FormAddress?.Trim() ?? string.Empty;
+            customer.City = FormCity?.Trim() ?? string.Empty;
             customer.State = FormState;
-            customer.Pincode = FormPincode;
+            customer.Pincode = FormPincode?.Trim() ?? string.Empty;
             customer.OpeningBalance = FormOpeningBalance;
             customer.OutstandingBalance = FormOpeningBalance; // Initial calculation
             customer.CreditDays = FormCreditDays;

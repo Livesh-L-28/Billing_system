@@ -19,4 +19,6 @@ public class Customer
     public int CreditDays { get; set; }
     public string CustomerType { get; set; } = "Unregistered"; // Registered, Unregistered, Composition
     public bool IsActive { get; set; } = true;
+
+    public override string ToString() => Name;
 }

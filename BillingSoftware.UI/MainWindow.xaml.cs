@@ -25,8 +25,8 @@ public partial class MainWindow : Window
 
         viewModel.RequestLoginRedirect += () =>
         {
-            var loginWindow = new LoginWindow();
-            loginWindow.Show();
+            var selectionWindow = new LoginSelectionWindow();
+            selectionWindow.Show();
             this.Close();
         };
     }

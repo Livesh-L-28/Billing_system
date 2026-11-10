@@ -27,6 +27,43 @@ public class BillingViewModel : ViewModelBase
     public ObservableCollection<Product> Products { get; private set; } = new();
     public ObservableCollection<InvoiceItem> InvoiceItems { get; } = new();
 
+    public System.ComponentModel.ICollectionView CustomersView { get; }
+    public System.ComponentModel.ICollectionView ProductsView { get; }
+
+    private string _customerSearchText = string.Empty;
+    public string CustomerSearchText
+    {
+        get => _customerSearchText;
+        set
+        {
+            if (SetProperty(ref _customerSearchText, value))
+            {
+                if (SelectedCustomer != null && string.Equals(SelectedCustomer.Name, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+                CustomersView.Refresh();
+            }
+        }
+    }
+
+    private string _productSearchText = string.Empty;
+    public string ProductSearchText
+    {
+        get => _productSearchText;
+        set
+        {
+            if (SetProperty(ref _productSearchText, value))
+            {
+                if (SelectedProduct != null && string.Equals(SelectedProduct.Name, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+                ProductsView.Refresh();
+            }
+        }
+    }
+
     // Selectors
     private Customer? _selectedCustomer;
     public Customer? SelectedCustomer
@@ -126,7 +163,7 @@ public class BillingViewModel : ViewModelBase
         set => SetProperty(ref _poDate, value);
     }
 
-    private string _paymentMethod = "Cash"; // Cash, Credit, Bank
+    private string _paymentMethod = "Credit"; // Cash, Credit, Bank
     public string PaymentMethod
     {
         get => _paymentMethod;
@@ -242,10 +279,30 @@ public class BillingViewModel : ViewModelBase
     // Lists for binding
     public ObservableCollection<string> PaymentMethods { get; } = new() { "Cash", "Bank", "Credit" };
 
+    private Guid? _editingInvoiceId;
+    public Guid? EditingInvoiceId
+    {
+        get => _editingInvoiceId;
+        set
+        {
+            if (SetProperty(ref _editingInvoiceId, value))
+            {
+                OnPropertyChanged(nameof(IsEditMode));
+                OnPropertyChanged(nameof(IsNewMode));
+            }
+        }
+    }
+
+    public bool IsEditMode => EditingInvoiceId.HasValue;
+    public bool IsNewMode => !IsEditMode;
+
+    private readonly Task _initializationTask;
+
     // Commands
     public RelayCommand AddItemCommand { get; }
     public ICommand RemoveItemCommand { get; }
     public IAsyncRelayCommand SaveInvoiceCommand { get; }
+    public IAsyncRelayCommand PrintInvoiceCommand { get; }
     public ICommand ClearFormCommand { get; }
 
     public BillingViewModel(
@@ -264,10 +321,47 @@ public class BillingViewModel : ViewModelBase
         AddItemCommand = new RelayCommand(ExecuteAddItem, CanAddItem);
         RemoveItemCommand = new RelayCommand<InvoiceItem>(ExecuteRemoveItem);
         SaveInvoiceCommand = new AsyncRelayCommand(SaveInvoiceAsync, CanSaveInvoice);
+        PrintInvoiceCommand = new AsyncRelayCommand(PrintInvoiceAsync, CanSaveInvoice);
         ClearFormCommand = new RelayCommand(ClearForm);
 
+        CustomersView = System.Windows.Data.CollectionViewSource.GetDefaultView(Customers);
+        CustomersView.Filter = FilterCustomerItem;
+
+        ProductsView = System.Windows.Data.CollectionViewSource.GetDefaultView(Products);
+        ProductsView.Filter = FilterProductItem;
+
         Title = "New Tax Invoice";
-        _ = LoadLookupsAsync();
+        _initializationTask = LoadLookupsAsync();
+    }
+
+    private bool FilterCustomerItem(object obj)
+    {
+        if (obj is Customer customer)
+        {
+            if (string.IsNullOrWhiteSpace(CustomerSearchText))
+                return true;
+
+            if (SelectedCustomer != null && SelectedCustomer.Id == customer.Id)
+                return true;
+
+            return customer.Name.Contains(CustomerSearchText, StringComparison.OrdinalIgnoreCase);
+        }
+        return false;
+    }
+
+    private bool FilterProductItem(object obj)
+    {
+        if (obj is Product product)
+        {
+            if (string.IsNullOrWhiteSpace(ProductSearchText))
+                return true;
+
+            if (SelectedProduct != null && SelectedProduct.Id == product.Id)
+                return true;
+
+            return product.Name.Contains(ProductSearchText, StringComparison.OrdinalIgnoreCase);
+        }
+        return false;
     }
 
     private async Task LoadLookupsAsync()
@@ -275,11 +369,19 @@ public class BillingViewModel : ViewModelBase
         try
         {
             var custs = await _dbContext.Customers.Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
-            Customers = new ObservableCollection<Customer>(custs);
+            Customers.Clear();
+            foreach (var c in custs)
+            {
+                Customers.Add(c);
+            }
             OnPropertyChanged(nameof(Customers));
 
             var prods = await _dbContext.Products.Where(p => p.IsActive).OrderBy(p => p.Name).ToListAsync();
-            Products = new ObservableCollection<Product>(prods);
+            Products.Clear();
+            foreach (var p in prods)
+            {
+                Products.Add(p);
+            }
             OnPropertyChanged(nameof(Products));
 
             await LoadNextInvoiceNumberAsync();
@@ -287,6 +389,63 @@ public class BillingViewModel : ViewModelBase
         catch (Exception ex)
         {
             System.Windows.MessageBox.Show("Failed to load selectors: " + ex.Message);
+        }
+    }
+
+    public async Task LoadInvoiceForEditingAsync(string invoiceNo)
+    {
+        if (_initializationTask != null)
+        {
+            await _initializationTask;
+        }
+
+        if (string.IsNullOrWhiteSpace(invoiceNo)) return;
+
+        try
+        {
+            var invoice = await _dbContext.Invoices
+                .Include(i => i.Customer)
+                .Include(i => i.InvoiceItems)
+                .ThenInclude(ii => ii.Product)
+                .FirstOrDefaultAsync(i => i.FormattedInvoiceNumber == invoiceNo);
+
+            if (invoice == null)
+            {
+                System.Windows.MessageBox.Show("Invoice not found in database.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return;
+            }
+
+            Title = $"Edit Invoice: {invoice.FormattedInvoiceNumber}";
+            EditingInvoiceId = invoice.Id;
+            SelectedCustomer = Customers.FirstOrDefault(c => c.Id == invoice.CustomerId);
+            
+            if (SelectedCustomer != null)
+            {
+                CustomerSearchText = SelectedCustomer.Name;
+            }
+
+            InvoiceDate = invoice.InvoiceDate;
+            DueDate = invoice.DueDate;
+            BillingAddress = invoice.BillingAddress;
+            ShippingAddress = invoice.ShippingAddress;
+            POInvoiceNumber = invoice.POInvoiceNumber;
+            PODate = invoice.PODate;
+            PaymentMethod = invoice.PaymentMethod;
+
+            InvoiceItems.Clear();
+            foreach (var item in invoice.InvoiceItems)
+            {
+                InvoiceItems.Add(item);
+            }
+
+            FormattedInvoiceNumber = invoice.FormattedInvoiceNumber;
+            IsManualInvoiceNumber = true; // allow text display of number
+
+            RecalculateInvoiceTotals();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show("Error loading invoice for editing: " + ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
         }
     }
 
@@ -302,7 +461,7 @@ public class BillingViewModel : ViewModelBase
             
             if (!IsManualInvoiceNumber)
             {
-                var setting = await _dbContext.Settings.FirstOrDefaultAsync(s => s.Id == 1) ?? new Setting { Id = 1 };
+                var setting = await _dbContext.Settings.FirstOrDefaultAsync(s => s.Id == _sessionContext.CurrentSettingId) ?? new Setting { Id = _sessionContext.CurrentSettingId };
                 string fySuffix = activeFY.Name; // "2026-27"
                 FormattedInvoiceNumber = setting.InvoiceFormat
                     .Replace("{Prefix}", setting.InvoicePrefix)
@@ -353,6 +512,13 @@ public class BillingViewModel : ViewModelBase
         BillingAddress = SelectedCustomer.Address;
         ShippingAddress = SelectedCustomer.Address;
         UpdateDueDate();
+        
+        // Recalculate taxes for all items since customer (and thus supply state) changed
+        foreach (var item in InvoiceItems)
+        {
+            CalculateTaxesForItem(item);
+        }
+
         RecalculateInvoiceTotals();
     }
 
@@ -416,8 +582,8 @@ public class BillingViewModel : ViewModelBase
             {
                 Id = Guid.NewGuid(),
                 ProductId = SelectedProduct.Id,
-                ProductName = SelectedProduct.Name,
-                HSNCode = SelectedProduct.HSNCode,
+                ProductName = SelectedProduct.Name?.Trim()?.ToUpperInvariant() ?? "",
+                HSNCode = SelectedProduct.HSNCode?.Trim()?.ToUpperInvariant() ?? "",
                 Quantity = LineQuantity,
                 Rate = LineRate,
                 DiscountPercent = LineDiscountPercent,
@@ -439,28 +605,45 @@ public class BillingViewModel : ViewModelBase
 
     private void CalculateTaxesForItem(InvoiceItem item)
     {
-        // Get company state
-        var company = _dbContext.Companies.FirstOrDefault(c => c.Id == 1);
-        string compState = company?.State ?? "Maharashtra";
-        string custState = SelectedCustomer?.State ?? "Maharashtra";
-
-        if (compState.Equals(custState, StringComparison.OrdinalIgnoreCase))
-        {
-            // Intra-state supply: Apply CGST + SGST (Half-half)
-            decimal halfRate = item.GSTPercentage / 2;
-            item.CGSTAmount = Math.Round(item.TaxableValue * (halfRate / 100), 2);
-            item.SGSTAmount = Math.Round(item.TaxableValue * (halfRate / 100), 2);
-            item.IGSTAmount = 0;
-        }
-        else
-        {
-            // Inter-state supply: Apply IGST (Full rate)
-            item.CGSTAmount = 0;
-            item.SGSTAmount = 0;
-            item.IGSTAmount = Math.Round(item.TaxableValue * (item.GSTPercentage / 100), 2);
-        }
+        // Always apply CGST + SGST (Half-half) and set IGST to 0
+        decimal halfRate = item.GSTPercentage / 2;
+        item.CGSTAmount = Math.Round(item.TaxableValue * (halfRate / 100), 2);
+        item.SGSTAmount = Math.Round(item.TaxableValue * (halfRate / 100), 2);
+        item.IGSTAmount = 0;
 
         item.TotalAmount = item.TaxableValue + item.CGSTAmount + item.SGSTAmount + item.IGSTAmount;
+    }
+
+    public static bool IsIntraState(string compState, string compGstin, string custState, string custGstin)
+    {
+        compGstin = (compGstin ?? "").Trim();
+        custGstin = (custGstin ?? "").Trim();
+
+        // 1. If both have GSTIN, compare state codes (first 2 digits)
+        if (compGstin.Length >= 2 && custGstin.Length >= 2 &&
+            char.IsDigit(compGstin[0]) && char.IsDigit(compGstin[1]) &&
+            char.IsDigit(custGstin[0]) && char.IsDigit(custGstin[1]))
+        {
+            string compStateCode = compGstin.Substring(0, 2);
+            string custStateCode = custGstin.Substring(0, 2);
+            if (compStateCode == custStateCode)
+            {
+                return true;
+            }
+        }
+
+        // 2. Fallback to robust normalized state names
+        return NormalizeStateName(compState) == NormalizeStateName(custState);
+    }
+
+    public static string NormalizeStateName(string stateName)
+    {
+        if (string.IsNullOrWhiteSpace(stateName)) return "";
+        string s = stateName.Trim().ToLowerInvariant().Replace(" ", "").Replace("-", "");
+        if (s == "tn") return "tamilnadu";
+        if (s == "mh") return "maharashtra";
+        if (s == "dl") return "delhi";
+        return s;
     }
 
     private void ExecuteRemoveItem(InvoiceItem? item)
@@ -513,6 +696,7 @@ public class BillingViewModel : ViewModelBase
 
         AmountInWords = NumberToWords.ConvertAmount(GrandTotal);
         SaveInvoiceCommand.NotifyCanExecuteChanged();
+        PrintInvoiceCommand.NotifyCanExecuteChanged();
     }
 
     private bool CanSaveInvoice()
@@ -522,11 +706,22 @@ public class BillingViewModel : ViewModelBase
 
     private async Task SaveInvoiceAsync()
     {
+        await SaveInvoiceInternalAsync(printInvoice: false);
+    }
+
+    private async Task PrintInvoiceAsync()
+    {
+        await SaveInvoiceInternalAsync(printInvoice: true);
+    }
+
+    private async Task SaveInvoiceInternalAsync(bool printInvoice)
+    {
         if (SelectedCustomer == null) return;
         if (InvoiceItems.Count == 0) return;
 
         IsBusy = true;
         SaveInvoiceCommand.NotifyCanExecuteChanged();
+        PrintInvoiceCommand.NotifyCanExecuteChanged();
 
         try
         {
@@ -544,12 +739,17 @@ public class BillingViewModel : ViewModelBase
             }
 
             // Retrieve Prefix formatting details
-            var setting = await _dbContext.Settings.FirstOrDefaultAsync(s => s.Id == 1) ?? new Setting { Id = 1 };
+            var setting = await _dbContext.Settings.FirstOrDefaultAsync(s => s.Id == _sessionContext.CurrentSettingId) ?? new Setting { Id = _sessionContext.CurrentSettingId };
             
-            int invoiceNumToSave;
-            string formattedNumToSave;
+            int invoiceNumToSave = 0;
+            string formattedNumToSave = string.Empty;
 
-            if (IsManualInvoiceNumber)
+            if (IsEditMode)
+            {
+                invoiceNumToSave = ParseInvoiceNumber(FormattedInvoiceNumber);
+                formattedNumToSave = FormattedInvoiceNumber.Trim();
+            }
+            else if (IsManualInvoiceNumber)
             {
                 if (string.IsNullOrWhiteSpace(FormattedInvoiceNumber))
                 {
@@ -607,42 +807,111 @@ public class BillingViewModel : ViewModelBase
                 formattedNumToSave = formattedNum;
             }
 
-            var invoice = new Invoice
+            Invoice? invoice = null;
+
+            if (IsEditMode)
             {
-                Id = Guid.NewGuid(),
-                InvoiceNumber = invoiceNumToSave,
-                FormattedInvoiceNumber = formattedNumToSave,
-                InvoiceDate = InvoiceDate,
-                FinancialYearId = activeFY.Id,
-                CustomerId = SelectedCustomer.Id,
-                BillingAddress = BillingAddress,
-                ShippingAddress = ShippingAddress,
-                POInvoiceNumber = POInvoiceNumber,
-                PODate = PODate,
-                DueDate = DueDate,
-                PaymentMethod = PaymentMethod,
-                SubTotal = SubTotal,
-                DiscountAmount = DiscountTotal,
-                CGSTTotal = CGSTTotal,
-                SGSTTotal = SGSTTotal,
-                IGSTTotal = IGSTTotal,
-                RoundOff = RoundOff,
-                GrandTotal = GrandTotal,
-                IsCancelled = false,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = _sessionContext.CurrentUser?.Id ?? Guid.Empty
-            };
+                invoice = await _dbContext.Invoices
+                    .Include(i => i.InvoiceItems)
+                    .Include(i => i.Payments)
+                    .FirstOrDefaultAsync(i => i.Id == EditingInvoiceId!.Value);
+
+                if (invoice == null)
+                {
+                    System.Windows.MessageBox.Show("Existing invoice to edit was not found.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    return;
+                }
+
+                // 1. Revert previous stock changes
+                foreach (var oldItem in invoice.InvoiceItems)
+                {
+                    var oldProduct = await _dbContext.Products.FindAsync(oldItem.ProductId);
+                    if (oldProduct != null)
+                    {
+                        oldProduct.CurrentStock += oldItem.Quantity;
+                        _dbContext.Products.Update(oldProduct);
+
+                        // Add a stock correction record
+                        await _dbContext.Stocks.AddAsync(new Stock
+                        {
+                            Id = Guid.NewGuid(),
+                            ProductId = oldProduct.Id,
+                            TransactionType = "SaleCorrection",
+                            Quantity = oldItem.Quantity,
+                            ReferenceId = invoice.Id,
+                            Remarks = $"Stock Reversion for Edit Invoice {invoice.FormattedInvoiceNumber}"
+                        });
+                    }
+                }
+
+                // 2. Revert previous customer outstanding balance if old payment was Credit
+                if (invoice.PaymentMethod == "Credit")
+                {
+                    var oldCustomer = await _dbContext.Customers.FindAsync(invoice.CustomerId);
+                    if (oldCustomer != null)
+                    {
+                        oldCustomer.OutstandingBalance -= invoice.GrandTotal;
+                        _dbContext.Customers.Update(oldCustomer);
+                    }
+                }
+
+                // 3. Remove old payments
+                var oldPayments = invoice.Payments.ToList();
+                if (oldPayments.Any())
+                {
+                    _dbContext.Payments.RemoveRange(oldPayments);
+                    invoice.Payments.Clear();
+                }
+
+                // 4. Remove old items
+                var oldItems = invoice.InvoiceItems.ToList();
+                if (oldItems.Any())
+                {
+                    _dbContext.InvoiceItems.RemoveRange(oldItems);
+                    invoice.InvoiceItems.Clear();
+                }
+            }
+            else
+            {
+                invoice = new Invoice
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = _sessionContext.CurrentUser?.Id ?? Guid.Empty
+                };
+            }
+
+            // Update main properties
+            invoice.InvoiceNumber = invoiceNumToSave;
+            invoice.FormattedInvoiceNumber = formattedNumToSave?.Trim()?.ToUpperInvariant() ?? "";
+            invoice.InvoiceDate = InvoiceDate;
+            invoice.FinancialYearId = activeFY.Id;
+            invoice.CustomerId = SelectedCustomer.Id;
+            invoice.BillingAddress = BillingAddress?.Trim()?.ToUpperInvariant() ?? "";
+            invoice.ShippingAddress = ShippingAddress?.Trim()?.ToUpperInvariant() ?? "";
+            invoice.POInvoiceNumber = POInvoiceNumber?.Trim()?.ToUpperInvariant() ?? "";
+            invoice.PODate = PODate;
+            invoice.DueDate = DueDate;
+            invoice.PaymentMethod = PaymentMethod;
+            invoice.SubTotal = SubTotal;
+            invoice.DiscountAmount = DiscountTotal;
+            invoice.CGSTTotal = CGSTTotal;
+            invoice.SGSTTotal = SGSTTotal;
+            invoice.IGSTTotal = IGSTTotal;
+            invoice.RoundOff = RoundOff;
+            invoice.GrandTotal = GrandTotal;
+            invoice.IsCancelled = false;
 
             // Copy items to invoice entity
             foreach (var uiItem in InvoiceItems)
             {
-                invoice.InvoiceItems.Add(new InvoiceItem
+                var newItem = new InvoiceItem
                 {
                     Id = Guid.NewGuid(),
                     InvoiceId = invoice.Id,
                     ProductId = uiItem.ProductId,
-                    ProductName = uiItem.ProductName,
-                    HSNCode = uiItem.HSNCode,
+                    ProductName = uiItem.ProductName?.Trim()?.ToUpperInvariant() ?? "",
+                    HSNCode = uiItem.HSNCode?.Trim()?.ToUpperInvariant() ?? "",
                     Quantity = uiItem.Quantity,
                     Rate = uiItem.Rate,
                     DiscountPercent = uiItem.DiscountPercent,
@@ -653,13 +922,15 @@ public class BillingViewModel : ViewModelBase
                     SGSTAmount = uiItem.SGSTAmount,
                     IGSTAmount = uiItem.IGSTAmount,
                     TotalAmount = uiItem.TotalAmount
-                });
+                };
+                invoice.InvoiceItems.Add(newItem);
+                _dbContext.Entry(newItem).State = EntityState.Added;
             }
 
             // Create payment receipt if Cash or Bank immediately
             if (PaymentMethod == "Cash" || PaymentMethod == "Bank")
             {
-                invoice.Payments.Add(new Payment
+                var newPayment = new Payment
                 {
                     Id = Guid.NewGuid(),
                     InvoiceId = invoice.Id,
@@ -667,7 +938,9 @@ public class BillingViewModel : ViewModelBase
                     AmountPaid = GrandTotal,
                     PaymentMode = PaymentMethod,
                     TransactionReference = "Immediate Billing Settlement"
-                });
+                };
+                invoice.Payments.Add(newPayment);
+                _dbContext.Entry(newPayment).State = EntityState.Added;
             }
 
             // Deduct Stock levels and Log Stock ledger
@@ -704,19 +977,32 @@ public class BillingViewModel : ViewModelBase
             }
 
             // Save transaction to DB
-            await _invoiceRepository.AddAsync(invoice);
+            if (!IsEditMode)
+            {
+                await _invoiceRepository.AddAsync(invoice);
+            }
             await _invoiceRepository.SaveAsync();
 
-            await _auditLogger.LogActivityAsync("Create Invoice", "Billing", $"Created invoice {formattedNumToSave} for customer {SelectedCustomer.Name}");
+            await _auditLogger.LogActivityAsync(IsEditMode ? "Edit Invoice" : "Create Invoice", "Billing", $"Saved invoice {formattedNumToSave} for customer {SelectedCustomer.Name}");
 
-            // Generate PDF & Show Print Preview
+            // Generate PDF and save to configured local storage path under user-specific subfolder
+            string localFilePath = string.Empty;
             try
             {
-                var tempDir = Path.Combine(Path.GetTempPath(), "BillingSoftware");
-                if (!Directory.Exists(tempDir)) Directory.CreateDirectory(tempDir);
-                var tempFile = Path.Combine(tempDir, $"{formattedNumToSave.Replace("/", "_").Replace("\\", "_")}.pdf");
+                string username = _sessionContext.CurrentUser?.Username?.Trim()?.ToLowerInvariant() ?? "admin";
+                string userFolder = (username.Contains("cashier") || username.Contains("samundeeswari")) ? "cashier" : "admin";
                 
-                var company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Id == 1) ?? new Company { Id = 1 };
+                string invoiceStorageDir = string.IsNullOrWhiteSpace(setting.InvoiceStorageFolderPath)
+                    ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BillingSoftware", "Invoices")
+                    : setting.InvoiceStorageFolderPath;
+
+                string targetDir = Path.Combine(invoiceStorageDir, userFolder);
+                if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
+
+                string pdfFileName = $"{formattedNumToSave!.Replace("/", "_").Replace("\\", "_")}.pdf";
+                localFilePath = Path.Combine(targetDir, pdfFileName);
+
+                var company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Id == _sessionContext.CurrentCompanyId) ?? new Company { Id = _sessionContext.CurrentCompanyId };
                 var fullInvoice = await _dbContext.Invoices
                     .Include(i => i.Customer)
                     .Include(i => i.InvoiceItems)
@@ -724,36 +1010,74 @@ public class BillingViewModel : ViewModelBase
                     
                 if (fullInvoice != null)
                 {
-                    BillingSoftware.Printing.InvoicePdfGenerator.GeneratePdf(fullInvoice, company, tempFile);
-                    
-                    // Show Print Preview
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        var previewWin = new Views.PrintPreviewWindow(tempFile);
-                        
-                        // Safely assign active workspace window as owner
-                        var activeWindow = System.Windows.Application.Current.Windows
-                            .OfType<System.Windows.Window>()
-                            .FirstOrDefault(w => w.IsActive || w.GetType().Name == "MainWindow");
-                            
-                        if (activeWindow != null && activeWindow != previewWin)
-                        {
-                            previewWin.Owner = activeWindow;
-                        }
-                        
-                        previewWin.ShowDialog();
-                    });
+                    BillingSoftware.Printing.InvoicePdfGenerator.GeneratePdf(fullInvoice, company, localFilePath);
                 }
             }
             catch (Exception pdfEx)
             {
-                System.Windows.MessageBox.Show("Invoice saved, but PDF print generation failed: " + pdfEx.Message, "PDF Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("Invoice saved in database, but PDF file generation failed: " + pdfEx.Message, "PDF Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+
+            // Print invoice if print request is active
+            if (printInvoice && !string.IsNullOrEmpty(localFilePath) && File.Exists(localFilePath))
+            {
+                try
+                {
+                    // Send directly to printer
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            var printProcess = new System.Diagnostics.Process
+                            {
+                                StartInfo = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = localFilePath,
+                                    Verb = "print",
+                                    CreateNoWindow = true,
+                                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                                    UseShellExecute = true
+                                }
+                            };
+                            printProcess.Start();
+                        }
+                        catch (Exception)
+                        {
+                            try
+                            {
+                                // Fallback: Open PDF in default viewer (like Edge/Chrome)
+                                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = localFilePath,
+                                    UseShellExecute = true
+                                });
+
+                                System.Windows.MessageBox.Show("Direct silent printing is not supported by your system's default PDF configuration. We have opened the invoice in your default viewer so you can print it (Ctrl + P).", "Direct Print Fallback", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                            }
+                            catch (Exception openEx)
+                            {
+                                System.Windows.MessageBox.Show($"Direct print command failed, and we could not open the PDF externally.\nDetails: {openEx.Message}", "Print Failed", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                            }
+                        }
+                    });
+                }
+                catch (Exception printEx)
+                {
+                    System.Windows.MessageBox.Show("PDF generated, but printing command encountered an issue: " + printEx.Message, "Print Command Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                }
             }
 
             System.Windows.MessageBox.Show($"Invoice {formattedNumToSave} saved successfully.", "Invoice Saved", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             
             // Clear form
             ClearForm();
+        }
+        catch (DbUpdateConcurrencyException dbEx)
+        {
+            var entry = dbEx.Entries.FirstOrDefault();
+            var entityName = entry?.Entity.GetType().Name ?? "Unknown";
+            var state = entry?.State.ToString() ?? "Unknown";
+            System.Windows.MessageBox.Show($"Failed to save invoice due to concurrency error in {entityName} (State: {state}):\n{dbEx.Message}", "Database Concurrency Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
         }
         catch (Exception ex)
         {
@@ -763,19 +1087,24 @@ public class BillingViewModel : ViewModelBase
         {
             IsBusy = false;
             SaveInvoiceCommand.NotifyCanExecuteChanged();
+            PrintInvoiceCommand.NotifyCanExecuteChanged();
         }
     }
 
     private void ClearForm()
     {
+        EditingInvoiceId = null;
+        Title = "New Tax Invoice";
         SelectedCustomer = null;
         SelectedProduct = null;
+        CustomerSearchText = string.Empty;
+        ProductSearchText = string.Empty;
         InvoiceDate = DateTime.Today;
         BillingAddress = string.Empty;
         ShippingAddress = string.Empty;
         POInvoiceNumber = string.Empty;
         PODate = null;
-        PaymentMethod = "Cash";
+        PaymentMethod = "Credit";
         InvoiceItems.Clear();
         
         SubTotal = 0;

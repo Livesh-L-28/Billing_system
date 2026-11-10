@@ -32,13 +32,49 @@ public class InvoiceDocument : IDocument
             page.PageColor(Colors.White);
             page.DefaultTextStyle(x => x.FontFamily("Arial").FontSize(9.5f));
 
-            page.Header().PaddingBottom(2).Row(row =>
+            page.Content().Column(column =>
             {
-                row.RelativeItem().PaddingLeft(120).AlignCenter().Text("SRI ANGALA PARAMESHWARI THUNAI").FontSize(8f);
-                row.ConstantItem(120).AlignRight().Text("TRIPLICATE FOR SUPPLIER").Bold().FontSize(8f);
+                // Page 1: Original for Recipient
+                column.Item().Element(c => ComposeCopy(c, "ORIGINAL FOR RECIPIENT"));
+                
+                // Page 2: Duplicate
+                column.Item().PageBreak();
+                string duplicateDesignation = IsServiceInvoice() ? "DUPLICATE FOR SUPPLIER" : "DUPLICATE FOR TRANSPORTER";
+                column.Item().Element(c => ComposeCopy(c, duplicateDesignation));
+                
+                if (!IsServiceInvoice())
+                {
+                    // Page 3: Triplicate
+                    column.Item().PageBreak();
+                    column.Item().Element(c => ComposeCopy(c, "TRIPLICATE FOR SUPPLIER"));
+                }
             });
 
-            page.Content().Border(1).BorderColor(Colors.Black).Column(column =>
+            // Page Numbering Footer outside the main bordered frame
+            page.Footer().Element(ComposeFooter);
+        });
+    }
+
+    private bool IsServiceInvoice()
+    {
+        if (Invoice.InvoiceItems == null || !Invoice.InvoiceItems.Any())
+            return false;
+        
+        return Invoice.InvoiceItems.All(item => 
+            !string.IsNullOrWhiteSpace(item.HSNCode) && 
+            item.HSNCode.Trim().StartsWith("99"));
+    }
+
+    private void ComposeCopy(IContainer container, string designation)
+    {
+        container.Column(col =>
+        {
+            col.Item().PaddingBottom(2).Row(row =>
+            {
+                row.RelativeItem().AlignRight().Text(designation?.ToUpperInvariant()).Bold().FontSize(8.5f);
+            });
+
+            col.Item().Border(1).BorderColor(Colors.Black).Column(column =>
             {
                 // 1. Header (Company details & Logo)
                 column.Item().Element(ComposeHeader);
@@ -69,9 +105,6 @@ public class InvoiceDocument : IDocument
                 // 7. Footer text & signature blocks
                 column.Item().Element(ComposeFooterSection);
             });
-
-            // Page Numbering Footer outside the main bordered frame
-            page.Footer().Element(ComposeFooter);
         });
     }
 
@@ -105,13 +138,12 @@ public class InvoiceDocument : IDocument
                 // Centered TAX INVOICE box
                 col.Item().AlignCenter().Border(0.5f).BorderColor(Colors.Black).PaddingHorizontal(10).PaddingVertical(2).Text("TAX INVOICE").Bold().FontSize(10);
                 
-                string mainName = Company.CompanyName;
-                string subtitle = "";
-                if (mainName.StartsWith("S.P.ATHIAPPAN", StringComparison.OrdinalIgnoreCase))
+                string? mainName = Company.CompanyName?.ToUpperInvariant();
+                if (string.IsNullOrWhiteSpace(mainName))
                 {
-                    mainName = "S.P.ATHIAPPAN";
-                    subtitle = "CLOTH MANUFACTURERS";
+                    mainName = "TEXVIBE TEXTILES";
                 }
+                string subtitle = "CLOTH MANUFACTURERS";
 
                 col.Item().AlignCenter().Text(mainName).Bold().FontSize(22);
                 if (!string.IsNullOrEmpty(subtitle))
@@ -123,11 +155,11 @@ public class InvoiceDocument : IDocument
                 var lines = new List<string>();
                 if (Company.Address.Contains("\n"))
                 {
-                    lines = Company.Address.Split('\n').Select(l => l.Trim()).ToList();
+                    lines = Company.Address.Split('\n').Select(l => l.Trim().ToUpperInvariant()).ToList();
                 }
                 else
                 {
-                    var parts = Company.Address.Split(',').Select(p => p.Trim()).ToList();
+                    var parts = Company.Address.Split(',').Select(p => p.Trim().ToUpperInvariant()).ToList();
                     if (parts.Count > 1 && parts[0].Length < 10)
                     {
                         lines.Add(parts[0] + ", " + parts[1] + ",");
@@ -157,17 +189,17 @@ public class InvoiceDocument : IDocument
             row.RelativeItem().Text(t =>
             {
                 t.Span("GSTIN : ").Bold().FontSize(8.5f);
-                t.Span(Company.GSTIN).Bold().FontSize(8.5f);
+                t.Span(Company.GSTIN?.ToUpperInvariant()).Bold().FontSize(8.5f);
             });
             row.RelativeItem().AlignCenter().Text(t =>
             {
                 t.Span("State  : ").Bold().FontSize(8.5f);
-                t.Span(Company.State.ToUpper()).Bold().FontSize(8.5f);
+                t.Span(Company.State?.ToUpperInvariant()).Bold().FontSize(8.5f);
             });
             row.RelativeItem().AlignCenter().Text(t =>
             {
                 t.Span("State Code  : ").Bold().FontSize(8.5f);
-                string stateCode = Company.GSTIN.Length >= 2 && char.IsDigit(Company.GSTIN[0]) && char.IsDigit(Company.GSTIN[1]) 
+                string stateCode = (Company.GSTIN ?? "").Length >= 2 && char.IsDigit(Company.GSTIN![0]) && char.IsDigit(Company.GSTIN![1]) 
                     ? Company.GSTIN.Substring(0, 2) 
                     : "33";
                 t.Span(stateCode).Bold().FontSize(8.5f);
@@ -195,12 +227,12 @@ public class InvoiceDocument : IDocument
                     custCol.Item().Row(r =>
                     {
                         r.ConstantItem(60).Text("Name").FontSize(8.5f);
-                        r.RelativeItem().Text($": {Invoice.Customer?.Name}").Bold().FontSize(8.5f);
+                        r.RelativeItem().Text($": {Invoice.Customer?.Name?.ToUpperInvariant()}").Bold().FontSize(8.5f);
                     });
 
                     var addrLines = (Invoice.BillingAddress ?? "")
                         .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(l => l.Trim())
+                        .Select(l => l.Trim().ToUpperInvariant())
                         .ToList();
 
                     while (addrLines.Count < 3)
@@ -233,7 +265,7 @@ public class InvoiceDocument : IDocument
                         r.ConstantItem(60).Text("GSTIN").FontSize(8.5f);
                         r.RelativeItem().Row(gstRow =>
                         {
-                            gstRow.RelativeItem().Text($": {Invoice.Customer?.GSTIN}").Bold().FontSize(8.5f);
+                            gstRow.RelativeItem().Text($": {Invoice.Customer?.GSTIN?.ToUpperInvariant()}").Bold().FontSize(8.5f);
                             gstRow.ConstantItem(100).Text($"Ph : {Invoice.Customer?.Mobile ?? "0"}").FontSize(8.5f);
                         });
                     });
@@ -243,7 +275,7 @@ public class InvoiceDocument : IDocument
                         r.ConstantItem(60).Text("State").FontSize(8.5f);
                         r.RelativeItem().Row(stateRow =>
                         {
-                            stateRow.RelativeItem().Text($": {Invoice.Customer?.State?.ToUpper()}").FontSize(8.5f);
+                            stateRow.RelativeItem().Text($": {Invoice.Customer?.State?.ToUpperInvariant()}").FontSize(8.5f);
                             
                             string custStateCode = (Invoice.Customer?.GSTIN ?? "").Length >= 2 && char.IsDigit(Invoice.Customer!.GSTIN[0]) && char.IsDigit(Invoice.Customer!.GSTIN[1])
                                 ? Invoice.Customer.GSTIN.Substring(0, 2)
@@ -280,7 +312,7 @@ public class InvoiceDocument : IDocument
         col.Item().PaddingVertical(2.5f).Row(r =>
         {
             r.ConstantItem(105).Text(label).FontSize(8.5f);
-            var valText = r.RelativeItem().Text($": {value}").FontSize(8.5f);
+            var valText = r.RelativeItem().Text($": {value?.ToUpperInvariant()}").FontSize(8.5f);
             if (isBoldValue)
             {
                 valText.Bold();
@@ -294,25 +326,25 @@ public class InvoiceDocument : IDocument
         {
             table.ColumnsDefinition(columns =>
             {
-                columns.ConstantColumn(30);  // S.No.
-                columns.ConstantColumn(50);  // Colour
-                columns.RelativeColumn();    // Item Description
-                columns.ConstantColumn(50);  // HSN
-                columns.ConstantColumn(75);  // Qty / Unit
-                columns.ConstantColumn(70);  // Rate
-                columns.ConstantColumn(80);  // Amount
+                columns.ConstantColumn(35);   // S.No.
+                columns.RelativeColumn();     // Description & Specification of Product
+                columns.ConstantColumn(55);   // HSN
+                columns.ConstantColumn(60);   // Qty
+                columns.ConstantColumn(45);   // UOM
+                columns.ConstantColumn(75);   // Rate / Unit
+                columns.ConstantColumn(85);   // Amount
             });
 
             // Table Headers
             table.Header(header =>
             {
-                AddHeaderCell(header.Cell(), "S.No.");
-                AddHeaderCell(header.Cell(), "Colour");
-                AddHeaderCell(header.Cell(), "Item Description");
-                AddHeaderCell(header.Cell(), "HSN");
-                AddHeaderCell(header.Cell(), "Qty / Unit");
-                AddHeaderCell(header.Cell(), "Rate");
-                AddHeaderCell(header.Cell(), "Amount");
+                AddHeaderCell(header.Cell(), "S.NO");
+                AddHeaderCell(header.Cell(), "DESCRIPTION & SPECIFICATION OF PRODUCT");
+                AddHeaderCell(header.Cell(), "HSNC");
+                AddHeaderCell(header.Cell(), "QTY");
+                AddHeaderCell(header.Cell(), "UOM");
+                AddHeaderCell(header.Cell(), "RATE / UNIT");
+                AddHeaderCell(header.Cell(), "AMOUNT");
             });
 
             // Table Rows
@@ -320,13 +352,10 @@ public class InvoiceDocument : IDocument
             foreach (var item in Invoice.InvoiceItems)
             {
                 AddTableCell(table.Cell(), index.ToString(), false, false);
-                AddTableCell(table.Cell(), "-", false, false);
-                AddTableCell(table.Cell(), item.ProductName, false, true);
-                AddTableCell(table.Cell(), item.HSNCode ?? "", false, false);
-                
-                string qtyUnit = $"{item.Quantity:N0} {item.Product?.Unit?.Code ?? "PICES"}";
-                AddTableCell(table.Cell(), qtyUnit, true, false);
-                
+                AddTableCell(table.Cell(), item.ProductName?.ToUpperInvariant() ?? "", false, true);
+                AddTableCell(table.Cell(), item.HSNCode?.ToUpperInvariant() ?? "", false, false);
+                AddTableCell(table.Cell(), item.Quantity.ToString("N2"), true, false);
+                AddTableCell(table.Cell(), (item.Product?.Unit?.Code ?? "PCS").ToUpperInvariant(), false, false);
                 AddTableCell(table.Cell(), item.Rate.ToString("N2"), true, false);
                 AddTableCell(table.Cell(), item.TaxableValue.ToString("N2"), true, false);
 
@@ -337,25 +366,25 @@ public class InvoiceDocument : IDocument
             int padRows = Math.Max(0, 20 - Invoice.InvoiceItems.Count);
             for (int i = 0; i < padRows; i++)
             {
-                AddTableCell(table.Cell(), "", false, false);
-                AddTableCell(table.Cell(), "", false, false);
-                AddTableCell(table.Cell(), "", false, true);
-                AddTableCell(table.Cell(), "", false, false);
-                AddTableCell(table.Cell(), "", false, false);
-                AddTableCell(table.Cell(), "", false, false);
-                AddTableCell(table.Cell(), "", false, false);
+                AddTableCell(table.Cell(), "", false, false); // S.No.
+                AddTableCell(table.Cell(), "", false, true);  // Description (left)
+                AddTableCell(table.Cell(), "", false, false); // HSN
+                AddTableCell(table.Cell(), "", false, false); // Qty
+                AddTableCell(table.Cell(), "", false, false); // UOM
+                AddTableCell(table.Cell(), "", false, false); // Rate
+                AddTableCell(table.Cell(), "", false, false); // Amount
             }
 
             // Totals row at the bottom of the table
             AddTableCell(table.Cell(), "", false, false); // S.No.
-            AddTableCell(table.Cell(), "", false, false); // Colour
-            AddTableCell(table.Cell(), "", false, true);  // Item Description
+            AddTableCell(table.Cell(), "", false, true);  // Description
             AddTableCell(table.Cell(), "", false, false); // HSN
             
             decimal totalQty = Invoice.InvoiceItems.Sum(item => item.Quantity);
             var totalQtyCell = table.Cell().BorderVertical(0.5f).BorderColor(Colors.Black).PaddingHorizontal(4).PaddingVertical(5.5f).AlignRight();
-            totalQtyCell.Text(totalQty.ToString("N0")).Bold().FontSize(9f);
+            totalQtyCell.Text(totalQty.ToString("N2")).Bold().FontSize(9f);
             
+            AddTableCell(table.Cell(), "", false, false); // UOM
             AddTableCell(table.Cell(), "", false, false); // Rate
             
             var totalAmtCell = table.Cell().BorderVertical(0.5f).BorderColor(Colors.Black).PaddingHorizontal(4).PaddingVertical(5.5f).AlignRight();
@@ -422,22 +451,20 @@ public class InvoiceDocument : IDocument
             {
                 col.Item().PaddingVertical(5).PaddingHorizontal(8).Column(totalsCol =>
                 {
-                    decimal totalAmountBeforeDiscount = Invoice.SubTotal + Invoice.DiscountAmount;
-                    AddTotalRow(totalsCol, "Total Amount", totalAmountBeforeDiscount.ToString("N2"));
-                    AddTotalRow(totalsCol, "Total Discount", Invoice.DiscountAmount.ToString("N2"));
-                    AddTotalRow(totalsCol, "Total Taxable", Invoice.SubTotal.ToString("N2"));
-                    
-                    if (Invoice.IGSTTotal > 0)
-                    {
-                        AddTotalRow(totalsCol, "IGST Value", Invoice.IGSTTotal.ToString("N2"));
-                    }
-                    else
-                    {
-                        AddTotalRow(totalsCol, "CGST Value", Invoice.CGSTTotal.ToString("N2"));
-                        AddTotalRow(totalsCol, "SGST Value", Invoice.SGSTTotal.ToString("N2"));
-                    }
-                    
+                    AddTotalRow(totalsCol, "Total Amount", Invoice.SubTotal.ToString("N2"));
+                    AddTotalRow(totalsCol, "Central GST", Invoice.CGSTTotal.ToString("N2"));
+                    AddTotalRow(totalsCol, "State GST", Invoice.SGSTTotal.ToString("N2"));
+                    AddTotalRow(totalsCol, "Integrated GST", Invoice.IGSTTotal.ToString("N2"));
                     AddTotalRow(totalsCol, "Round Off", Invoice.RoundOff.ToString("N2"));
+
+                    totalsCol.Item().PaddingVertical(2).LineHorizontal(0.5f).LineColor(Colors.Black);
+
+                    totalsCol.Item().PaddingVertical(2.5f).Row(r =>
+                    {
+                        r.RelativeItem().Text("Grand Invoice Amt").Bold().FontSize(10.5f);
+                        r.ConstantItem(15).Text(":").FontSize(10.5f).AlignCenter();
+                        r.ConstantItem(80).Text(Invoice.GrandTotal.ToString("N2")).Bold().FontSize(10.5f).AlignRight();
+                    });
                 });
             });
         });
@@ -448,7 +475,7 @@ public class InvoiceDocument : IDocument
         col.Item().PaddingVertical(2.5f).Row(r =>
         {
             r.ConstantItem(75).Text(label).FontSize(8.5f);
-            r.RelativeItem().Text($": {value}").Bold().FontSize(8.5f);
+            r.RelativeItem().Text($": {value?.ToUpperInvariant()}").Bold().FontSize(8.5f);
         });
     }
 
@@ -464,87 +491,55 @@ public class InvoiceDocument : IDocument
 
     private void ComposeAmountAndNetValue(IContainer container)
     {
-        container.Row(row =>
+        container.PaddingVertical(4).PaddingHorizontal(6).Row(r =>
         {
-            // Rupees in Words (left)
-            row.RelativeItem().PaddingVertical(4).PaddingHorizontal(6).Row(r =>
+            string words = NumberToWords.ConvertAmount(Invoice.GrandTotal);
+            r.RelativeItem().Text(t =>
             {
-                string words = NumberToWords.ConvertAmount(Invoice.GrandTotal);
-                r.RelativeItem().Text(t =>
-                {
-                    t.Span("Rupees in Words : ").Bold().FontSize(8.5f);
-                    t.Span(words).Bold().FontSize(8.5f);
-                });
-            });
-
-            // Net Invoice Value (right)
-            row.ConstantItem(220).BorderLeft(0.5f).BorderColor(Colors.Black).PaddingVertical(4).PaddingHorizontal(8).Row(r =>
-            {
-                r.RelativeItem().Text("Net Invoice Value").Bold().FontSize(10.5f);
-                r.ConstantItem(15).Text(":").Bold().FontSize(10.5f).AlignCenter();
-                r.ConstantItem(80).Text(Invoice.GrandTotal.ToString("N2")).Bold().FontSize(10.5f).AlignRight();
+                t.Span("Rupees in Words : ").Bold().FontSize(8.5f);
+                t.Span(words).Bold().FontSize(8.5f);
             });
         });
     }
 
     private void ComposeHsnSummary(IContainer container)
     {
-        bool hasIgst = Invoice.IGSTTotal > 0;
-
         container.Table(table =>
         {
-            if (hasIgst)
+            table.ColumnsDefinition(columns =>
             {
-                table.ColumnsDefinition(columns =>
-                {
-                    columns.RelativeColumn(1.5f); // HSN Code
-                    columns.RelativeColumn(2.0f); // Taxable Value
-                    columns.RelativeColumn(1.0f); // IGST %
-                    columns.RelativeColumn(1.5f); // IGST Amount
-                });
+                columns.RelativeColumn(1.2f); // HSN Code
+                columns.RelativeColumn(1.8f); // Taxable Value
+                columns.RelativeColumn(0.8f); // CGST %
+                columns.RelativeColumn(1.2f); // CGST Amount
+                columns.RelativeColumn(0.8f); // SGST %
+                columns.RelativeColumn(1.2f); // SGST Amount
+                columns.RelativeColumn(0.8f); // IGST %
+                columns.RelativeColumn(1.2f); // IGST Amount
+            });
 
-                table.Header(header =>
-                {
-                    header.Cell().RowSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().AlignMiddle().Text("HSN Code").Bold().FontSize(8.5f);
-                    header.Cell().RowSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().AlignMiddle().Text("Taxable").Bold().FontSize(8.5f);
-                    
-                    header.Cell().ColumnSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Integrated GST").Bold().FontSize(8.5f);
-
-                    header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("%").Bold().FontSize(8.5f);
-                    header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Amount").Bold().FontSize(8.5f);
-                });
-            }
-            else
+            table.Header(header =>
             {
-                table.ColumnsDefinition(columns =>
-                {
-                    columns.RelativeColumn(1.5f); // HSN Code
-                    columns.RelativeColumn(2.0f); // Taxable Value
-                    columns.RelativeColumn(1.0f); // CGST %
-                    columns.RelativeColumn(1.5f); // CGST Amount
-                    columns.RelativeColumn(1.0f); // SGST %
-                    columns.RelativeColumn(1.5f); // SGST Amount
-                });
+                header.Cell().RowSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().AlignMiddle().Text("HSN Code").Bold().FontSize(8.5f);
+                header.Cell().RowSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().AlignMiddle().Text("Taxable").Bold().FontSize(8.5f);
+                
+                header.Cell().ColumnSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Central GST").Bold().FontSize(8.5f);
+                header.Cell().ColumnSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("State GST").Bold().FontSize(8.5f);
+                header.Cell().ColumnSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Integrated GST").Bold().FontSize(8.5f);
 
-                table.Header(header =>
-                {
-                    header.Cell().RowSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().AlignMiddle().Text("HSN Code").Bold().FontSize(8.5f);
-                    header.Cell().RowSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().AlignMiddle().Text("Taxable").Bold().FontSize(8.5f);
-                    
-                    header.Cell().ColumnSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Central GST").Bold().FontSize(8.5f);
-                    header.Cell().ColumnSpan(2).BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("State GST").Bold().FontSize(8.5f);
+                header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("%").Bold().FontSize(8.5f);
+                header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Amount").Bold().FontSize(8.5f);
+                
+                header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("%").Bold().FontSize(8.5f);
+                header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Amount").Bold().FontSize(8.5f);
 
-                    header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("%").Bold().FontSize(8.5f);
-                    header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Amount").Bold().FontSize(8.5f);
-                    
-                    header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("%").Bold().FontSize(8.5f);
-                    header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Amount").Bold().FontSize(8.5f);
-                });
-            }
+                header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("%").Bold().FontSize(8.5f);
+                header.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).Padding(2).AlignCenter().Text("Amount").Bold().FontSize(8.5f);
+            });
 
             // HSN aggregates
             var groups = Invoice.InvoiceItems
-                .GroupBy(i => new { HSN = i.HSNCode ?? "NA", i.GSTPercentage })
+                .GroupBy(i => new { HSN = (i.HSNCode ?? "NA").ToUpperInvariant(), i.GSTPercentage })
                 .Select(g => new
                 {
                     HSN = g.Key.HSN,
@@ -561,25 +556,20 @@ public class InvoiceDocument : IDocument
                 table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignCenter().Text(g.HSN).FontSize(8.5f);
                 table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignRight().Text(g.Taxable.ToString("N2")).FontSize(8.5f);
 
-                if (hasIgst)
-                {
-                    // IGST
-                    decimal igstRate = g.GST;
-                    table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignCenter().Text(igstRate > 0 ? igstRate.ToString("G29") : "0.00").FontSize(8.5f);
-                    table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignRight().Text(g.IGST.ToString("N2")).FontSize(8.5f);
-                }
-                else
-                {
-                    // CGST
-                    decimal cgstRate = g.GST / 2;
-                    table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignCenter().Text(cgstRate > 0 ? cgstRate.ToString("G29") : "0.00").FontSize(8.5f);
-                    table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignRight().Text(g.CGST.ToString("N2")).FontSize(8.5f);
+                // Central GST
+                decimal cgstRate = g.CGST > 0 ? g.GST / 2 : 0;
+                table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignCenter().Text(cgstRate > 0 ? cgstRate.ToString("F2") : "0.00").FontSize(8.5f);
+                table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignRight().Text(g.CGST.ToString("N2")).FontSize(8.5f);
 
-                    // SGST
-                    decimal sgstRate = g.GST / 2;
-                    table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignCenter().Text(sgstRate > 0 ? sgstRate.ToString("G29") : "0.00").FontSize(8.5f);
-                    table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignRight().Text(g.SGST.ToString("N2")).FontSize(8.5f);
-                }
+                // State GST
+                decimal sgstRate = g.SGST > 0 ? g.GST / 2 : 0;
+                table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignCenter().Text(sgstRate > 0 ? sgstRate.ToString("F2") : "0.00").FontSize(8.5f);
+                table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignRight().Text(g.SGST.ToString("N2")).FontSize(8.5f);
+
+                // Integrated GST
+                decimal igstRate = g.IGST > 0 ? g.GST : 0;
+                table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignCenter().Text(igstRate > 0 ? igstRate.ToString("F2") : "0.00").FontSize(8.5f);
+                table.Cell().BorderRight(0.5f).BorderBottom(0.5f).BorderColor(Colors.Black).PaddingVertical(3.5f).PaddingHorizontal(2).AlignRight().Text(g.IGST.ToString("N2")).FontSize(8.5f);
             }
         });
     }
@@ -595,10 +585,10 @@ public class InvoiceDocument : IDocument
                 {
                     leftCol.Item().Text("Declaration").Bold().FontSize(8.5f);
                     leftCol.Item().Text("1. Payment Terms - Immediate").FontSize(8f);
-                    leftCol.Item().Text("2. Subject to Rasipuram Jurisdiction only.").FontSize(8f);
+                    leftCol.Item().Text("2. Subject to Local Jurisdiction only.").FontSize(8f);
                     leftCol.Item().Text("3. Goods once sold cannot be taken back.").FontSize(8f);
                     leftCol.Item().Text("4. Please do not mix 2 different Lots.").FontSize(8f);
-                    leftCol.Item().Text("5. No claim will be entertaine.").FontSize(8f);
+                    leftCol.Item().Text("5. No claim will be entertained.").FontSize(8f);
                 });
 
                 // Middle Column: Received By
@@ -611,7 +601,7 @@ public class InvoiceDocument : IDocument
                 // Right Column: Authorised Signatory
                 row.RelativeItem(1.0f).Column(rightCol =>
                 {
-                    rightCol.Item().Text($"For {Company.CompanyName}").Bold().FontSize(9f).AlignRight();
+                    rightCol.Item().Text($"For {Company.CompanyName?.ToUpperInvariant()}").Bold().FontSize(9f).AlignRight();
                     rightCol.Item().Height(35); // signature space
                     rightCol.Item().Text("Authorised Signatory").Bold().FontSize(9f).AlignRight();
                 });

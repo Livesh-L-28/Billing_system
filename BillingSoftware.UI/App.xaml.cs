@@ -53,10 +53,10 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        // 5. Open Login Window
-        Log.Information("Showing Login Window...");
-        var loginWindow = new LoginWindow();
-        loginWindow.Show();
+        // 5. Open Login Selection Window
+        Log.Information("Showing Login Selection Window...");
+        var selectionWindow = new LoginSelectionWindow();
+        selectionWindow.Show();
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -76,8 +76,9 @@ public partial class App : System.Windows.Application
         services.AddScoped<IAuthService, AuthService>();
 
         // ViewModels
-        services.AddSingleton<MainWindowViewModel>();
+        services.AddTransient<MainWindowViewModel>();
         services.AddTransient<LoginViewModel>();
+        services.AddTransient<LoginSelectionViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<CustomerListViewModel>();
         services.AddTransient<ProductListViewModel>();
@@ -88,7 +89,7 @@ public partial class App : System.Windows.Application
         services.AddTransient<BackupViewModel>();
 
         // Views
-        services.AddSingleton<MainWindow>();
+        services.AddTransient<MainWindow>();
     }
 
     private void ApplySavedTheme()

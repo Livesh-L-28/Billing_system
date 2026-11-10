@@ -448,7 +448,7 @@
                             <!-- Icon path geometry using Tag property -->
                             <Path Grid.Column="0" 
                                   x:Name="icon"
-                                  Data="{TemplateBinding Tag}" 
+                                  Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" 
                                   Fill="{TemplateBinding Foreground}" 
                                   Stretch="Uniform" Width="18" Height="18" 
                                   VerticalAlignment="Center" HorizontalAlignment="Center"
@@ -672,8 +672,26 @@
                                           IsHitTestVisible="false" 
                                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <TextBox x:Name="PART_EditableTextBox"
+                                 HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                 IsReadOnly="{TemplateBinding IsReadOnly}"
+                                 Margin="{TemplateBinding Padding}"
+                                 Visibility="Collapsed"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                 Foreground="{TemplateBinding Foreground}"
+                                 FontFamily="{TemplateBinding FontFamily}"
+                                 FontSize="{TemplateBinding FontSize}"
+                                 Style="{x:Null}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsEditable" Value="true">
+                            <Setter Property="IsTabStop" Value="false"/>
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="contentPresenter" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
                         <Trigger Property="HasItems" Value="false">
                             <Setter TargetName="dropDownBorder" Property="Height" Value="95"/>
                         </Trigger>

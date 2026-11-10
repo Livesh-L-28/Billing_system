@@ -1,0 +1,209 @@
+<Window x:Class="BillingSoftware.UI.LoginSelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BillingSoftware.UI"
+        mc:Ignorable="d" 
+        Title="Bill Soft GST Billing Software - Choose Terminal" 
+        Height="580" Width="880"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="50" 
+                      ResizeBorderThickness="0" 
+                      CornerRadius="0" 
+                      GlassFrameThickness="1" 
+                      UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    
+    <Border CornerRadius="16" 
+            Background="{DynamicResource BackgroundBrush}" 
+            BorderBrush="{DynamicResource GlassBorderBrush}" 
+            BorderThickness="1.5"
+            ClipToBounds="True">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25" Color="#000000" Opacity="0.15" ShadowDepth="4" Direction="270" />
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Custom Titlebar & Header -->
+            <Grid Grid.Row="0" Height="50" Background="{DynamicResource SurfaceBrush}">
+                <!-- Application Name/Logo -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
+                    <TextBlock Text="BILL SOFT" Foreground="{DynamicResource AccentBrush}" FontSize="18" FontWeight="Black" FontFamily="{StaticResource MainFont}"/>
+                    <TextBlock Text="GST Billing Software" Foreground="{DynamicResource TextMutedBrush}" FontSize="12" FontWeight="Bold" Margin="8,0,0,0" FontFamily="{StaticResource MainFont}" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Custom Titlebar overlay buttons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" Margin="0,0,10,0">
+                    <Button Style="{StaticResource WindowMinButton}" Click="MinimizeButton_Click" ToolTip="Minimize"/>
+                    <Button Style="{StaticResource WindowCloseButton}" Click="CloseButton_Click" ToolTip="Close"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Heading & Financial Year -->
+            <Grid Grid.Row="1" Margin="30,20,30,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Choose Your Terminal" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource MainFont}"/>
+                    <TextBlock Text="Select a pre-configured terminal role to access the billing system" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" FontFamily="{StaticResource MainFont}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True" Visibility="Collapsed">
+                    <TextBlock Text="Financial Year:" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" Margin="0,0,10,0" FontFamily="{StaticResource MainFont}"/>
+                    <ComboBox ItemsSource="{Binding FinancialYears}" 
+                              SelectedItem="{Binding SelectedFinancialYear}" 
+                              DisplayMemberPath="Name" 
+                              Width="140" Height="36" 
+                              VerticalContentAlignment="Center"
+                              TabIndex="1"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Terminals Container -->
+            <Grid Grid.Row="2" Margin="30,10,30,15" WindowChrome.IsHitTestVisibleInChrome="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Admin Terminal Card -->
+                <Border Grid.Column="0" Style="{StaticResource ModernCard}" BorderThickness="1.5">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Icon & Role Title -->
+                        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                            <Grid HorizontalAlignment="Left" Width="48" Height="48" Margin="0,0,0,10">
+                                <Border CornerRadius="12" Background="{DynamicResource AccentLightBrush}" />
+                                <Path Data="M12 4a4 4 0 1 1-4 4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z" 
+                                      Fill="{DynamicResource AccentBrush}" 
+                                      Width="24" Height="24" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Text="TEXVIBE TEXTILES" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource MainFont}"/>
+                            <TextBlock Text="Administrator Terminal - Full Access" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" Margin="0,4,0,0" FontFamily="{StaticResource MainFont}"/>
+                        </StackPanel>
+
+                        <!-- Fields -->
+                        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                            <!-- Username -->
+                            <TextBlock Text="Username" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,4" FontFamily="{StaticResource MainFont}"/>
+                            <TextBox x:Name="txtAdminUsername" Text="{Binding AdminUsername, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" TabIndex="2"/>
+
+                            <!-- Password -->
+                            <TextBlock Text="Password" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,4" FontFamily="{StaticResource MainFont}"/>
+                            <PasswordBox x:Name="txtAdminPassword" Margin="0,0,0,5" TabIndex="3"/>
+                        </StackPanel>
+
+                        <!-- Action -->
+                        <Button Grid.Row="2" 
+                                Content="Login as Admin" 
+                                Command="{Binding LoginAdminCommand}" 
+                                CommandParameter="{Binding ElementName=txtAdminPassword}"
+                                Height="42"
+                                TabIndex="4"/>
+                    </Grid>
+                </Border>
+
+                <!-- Cashier Terminal Card -->
+                <Border Grid.Column="2" Style="{StaticResource ModernCard}" BorderThickness="1.5">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Icon & Role Title -->
+                        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                            <Grid HorizontalAlignment="Left" Width="48" Height="48" Margin="0,0,0,10">
+                                <Border CornerRadius="12" Background="{DynamicResource AccentLightBrush}" />
+                                <Path Data="M12 4a4 4 0 1 1-4 4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z" 
+                                      Fill="{DynamicResource AccentBrush}" 
+                                      Width="24" Height="24" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Text="VIBE WEAVES" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource MainFont}"/>
+                            <TextBlock Text="Cashier Terminal - Standard Access" FontSize="12" Foreground="{DynamicResource TextMutedBrush}" TextWrapping="Wrap" Margin="0,4,0,0" FontFamily="{StaticResource MainFont}"/>
+                        </StackPanel>
+
+                        <!-- Fields -->
+                        <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                            <!-- Username -->
+                            <TextBlock Text="Username" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,4" FontFamily="{StaticResource MainFont}"/>
+                            <TextBox x:Name="txtCashierUsername" Text="{Binding CashierUsername, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" TabIndex="5"/>
+
+                            <!-- Password -->
+                            <TextBlock Text="Password" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,4" FontFamily="{StaticResource MainFont}"/>
+                            <PasswordBox x:Name="txtCashierPassword" Margin="0,0,0,5" TabIndex="6"/>
+                        </StackPanel>
+
+                        <!-- Action -->
+                        <Button Grid.Row="2" 
+                                Content="Login as Cashier" 
+                                Command="{Binding LoginCashierCommand}" 
+                                CommandParameter="{Binding ElementName=txtCashierPassword}"
+                                Height="42"
+                                TabIndex="7"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Bottom Actions / Errors -->
+            <Border Grid.Row="3" Background="{DynamicResource SurfaceBrush}" Padding="30,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Error Message -->
+                    <TextBlock Grid.Column="0" 
+                               Text="{Binding ErrorMessage}" 
+                               Foreground="{DynamicResource DangerBrush}" 
+                               FontSize="12.5" 
+                               FontWeight="Medium"
+                               VerticalAlignment="Center" 
+                               TextWrapping="Wrap" 
+                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}, FallbackValue=Collapsed}" 
+                               FontFamily="{StaticResource MainFont}"/>
+
+                    <!-- Navigation & Exit Actions -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Center">
+                        <Button Content="Switch to Manual Login" 
+                                Style="{StaticResource SecondaryButton}" 
+                                Click="SwitchToManualLogin_Click" 
+                                Margin="0,0,12,0" 
+                                Height="36"
+                                TabIndex="8"/>
+                        <Button Content="Exit Application" 
+                                Style="{StaticResource SecondaryButton}" 
+                                Click="ExitButton_Click" 
+                                Height="36"
+                                TabIndex="9"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

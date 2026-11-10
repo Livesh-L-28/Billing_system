@@ -44,7 +44,7 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand ShowBackupCommand { get; }
     public ICommand LogoutCommand { get; }
 
-    public event Action? RequestClose;
+    // public event Action? RequestClose;
     public event Action? RequestLoginRedirect;
 
     public MainWindowViewModel(
@@ -67,10 +67,26 @@ public class MainWindowViewModel : ViewModelBase
         ShowBackupCommand = new RelayCommand(ShowBackup);
         LogoutCommand = new AsyncRelayCommand(ExecuteLogoutAsync);
 
-        Title = "TexVibe GST Billing";
+        Title = "Bill Soft GST Billing";
 
         // Initial view
         ShowDashboard();
+
+        _sessionContext.NavigationRequested += async (viewName, param) =>
+        {
+            if (viewName == "BillingViewModel")
+            {
+                if (HasPermission("Billing"))
+                {
+                    var billingVm = ResolveViewModel<BillingViewModel>();
+                    CurrentViewModel = billingVm;
+                    if (param is string invoiceNo)
+                    {
+                        await billingVm.LoadInvoiceForEditingAsync(invoiceNo);
+                    }
+                }
+            }
+        };
     }
 
     private void ShowDashboard()
@@ -141,7 +157,7 @@ public class MainWindowViewModel : ViewModelBase
             // Auto-backup on logout
             using var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<BillingDbContext>();
-            var settings = dbContext.Settings.FirstOrDefault(s => s.Id == 1);
+            var settings = dbContext.Settings.FirstOrDefault(s => s.Id == _sessionContext.CurrentSettingId);
             string backupDir = settings?.BackupFolderPath ?? string.Empty;
             if (string.IsNullOrWhiteSpace(backupDir))
             {

@@ -35,4 +35,4 @@ public static class PasswordHasher
         var keyToCheck = Convert.ToBase64String(algorithm.GetBytes(KeySize));
         return hash == keyToCheck;
     }
-}
+} 

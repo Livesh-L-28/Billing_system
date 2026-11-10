@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
@@ -27,6 +28,7 @@
     <ProjectReference Include="..\BillingSoftware.Database\BillingSoftware.Database.csproj" />
     <ProjectReference Include="..\BillingSoftware.Common\BillingSoftware.Common.csproj" />
     <ProjectReference Include="..\BillingSoftware.Printing\BillingSoftware.Printing.csproj" />
+    <ProjectReference Include="..\BillingSoftware.UI\BillingSoftware.UI.csproj" />
   </ItemGroup>
 
 </Project>

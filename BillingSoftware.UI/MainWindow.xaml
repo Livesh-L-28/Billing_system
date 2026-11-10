@@ -7,7 +7,7 @@
         xmlns:viewmodels="clr-namespace:BillingSoftware.UI.ViewModels"
         xmlns:views="clr-namespace:BillingSoftware.UI.Views"
         mc:Ignorable="d"
-        Title="TexVibe GST Billing Software" 
+        Title="Bill Soft GST Billing Software" 
         Height="700" Width="1100"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
@@ -97,7 +97,7 @@
                               Fill="{DynamicResource AccentBrush}" 
                               Stretch="Uniform" Width="18" Height="18" 
                               VerticalAlignment="Center" />
-                        <TextBlock Text="TexVibe GST Billing" 
+                        <TextBlock Text="Bill Soft GST Billing" 
                                    Foreground="{DynamicResource TextBrush}" 
                                    FontSize="13" FontWeight="Bold" 
                                    VerticalAlignment="Center" Margin="8,0,0,0"
@@ -166,7 +166,7 @@
                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
                             
                             <!-- Title (Hidden when collapsed) -->
-                            <TextBlock Grid.Column="1" Text="TEXVIBE" 
+                            <TextBlock Grid.Column="1" Text="BILL SOFT" 
                                        Foreground="White" 
                                        FontSize="18" FontWeight="Bold" 
                                        VerticalAlignment="Center" Margin="10,0,0,0"

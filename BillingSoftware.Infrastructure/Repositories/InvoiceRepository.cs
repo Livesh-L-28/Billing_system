@@ -6,13 +6,17 @@ using Microsoft.EntityFrameworkCore;
 using BillingSoftware.Core.Entities;
 using BillingSoftware.Core.Repositories;
 using BillingSoftware.Database;
+using BillingSoftware.Application.Services;
 
 namespace BillingSoftware.Infrastructure.Repositories;
 
 public class InvoiceRepository : Repository<Invoice>, IInvoiceRepository
 {
-    public InvoiceRepository(BillingDbContext context) : base(context)
+    private readonly ISessionContext _sessionContext;
+
+    public InvoiceRepository(BillingDbContext context, ISessionContext sessionContext) : base(context)
     {
+        _sessionContext = sessionContext;
     }
 
     public async Task<Invoice?> GetByIdWithDetailsAsync(Guid id)
@@ -28,9 +32,10 @@ public class InvoiceRepository : Repository<Invoice>, IInvoiceRepository
 
     public async Task<IEnumerable<Invoice>> GetInvoicesByFinancialYearAsync(Guid financialYearId)
     {
+        Guid currentUserId = _sessionContext.CurrentUser?.Id ?? Guid.Empty;
         return await _dbSet
             .Include(i => i.Customer)
-            .Where(i => i.FinancialYearId == financialYearId)
+            .Where(i => i.FinancialYearId == financialYearId && i.CreatedBy == currentUserId)
             .OrderByDescending(i => i.InvoiceDate)
             .ThenByDescending(i => i.InvoiceNumber)
             .ToListAsync();
@@ -38,8 +43,9 @@ public class InvoiceRepository : Repository<Invoice>, IInvoiceRepository
 
     public async Task<int> GetNextInvoiceNumberAsync(Guid financialYearId)
     {
+        Guid currentUserId = _sessionContext.CurrentUser?.Id ?? Guid.Empty;
         var maxNum = await _dbSet
-            .Where(i => i.FinancialYearId == financialYearId)
+            .Where(i => i.FinancialYearId == financialYearId && i.CreatedBy == currentUserId)
             .Select(i => (int?)i.InvoiceNumber)
             .MaxAsync();
 

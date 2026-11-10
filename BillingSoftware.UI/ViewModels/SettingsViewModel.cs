@@ -15,6 +15,7 @@ namespace BillingSoftware.UI.ViewModels;
 public class SettingsViewModel : ViewModelBase
 {
     private readonly BillingDbContext _dbContext;
+    private readonly ISessionContext _sessionContext;
     private readonly IAuditLogger _auditLogger;
 
     // Company Properties
@@ -159,6 +160,13 @@ public class SettingsViewModel : ViewModelBase
         set => SetProperty(ref _defaultPrinterName, value);
     }
 
+    private string _invoiceStorageFolderPath = string.Empty;
+    public string InvoiceStorageFolderPath
+    {
+        get => _invoiceStorageFolderPath;
+        set => SetProperty(ref _invoiceStorageFolderPath, value);
+    }
+
     // Lists
     public ObservableCollection<string> Themes { get; } = new() { "Light", "Dark" };
     public ObservableCollection<string> States { get; } = new()
@@ -178,10 +186,12 @@ public class SettingsViewModel : ViewModelBase
     public ICommand SelectLogoCommand { get; }
     public ICommand SelectSignatureCommand { get; }
     public ICommand SelectBackupPathCommand { get; }
+    public ICommand SelectInvoiceStoragePathCommand { get; }
 
-    public SettingsViewModel(BillingDbContext dbContext, IAuditLogger auditLogger)
+    public SettingsViewModel(BillingDbContext dbContext, ISessionContext sessionContext, IAuditLogger auditLogger)
     {
         _dbContext = dbContext;
+        _sessionContext = sessionContext;
         _auditLogger = auditLogger;
 
         SaveCompanyCommand = new AsyncRelayCommand(SaveCompanyAsync);
@@ -189,6 +199,7 @@ public class SettingsViewModel : ViewModelBase
         SelectLogoCommand = new RelayCommand(SelectLogo);
         SelectSignatureCommand = new RelayCommand(SelectSignature);
         SelectBackupPathCommand = new RelayCommand(SelectBackupPath);
+        SelectInvoiceStoragePathCommand = new RelayCommand(SelectInvoiceStoragePath);
 
         Title = "Settings";
         
@@ -201,7 +212,7 @@ public class SettingsViewModel : ViewModelBase
         try
         {
             // Load Company
-            var company = _dbContext.Companies.FirstOrDefault(c => c.Id == 1);
+            var company = _dbContext.Companies.FirstOrDefault(c => c.Id == _sessionContext.CurrentCompanyId);
             if (company != null)
             {
                 CompanyName = company.CompanyName;
@@ -221,7 +232,7 @@ public class SettingsViewModel : ViewModelBase
             }
 
             // Load Settings
-            var setting = _dbContext.Settings.FirstOrDefault(s => s.Id == 1);
+            var setting = _dbContext.Settings.FirstOrDefault(s => s.Id == _sessionContext.CurrentSettingId);
             if (setting != null)
             {
                 InvoicePrefix = setting.InvoicePrefix;
@@ -230,6 +241,7 @@ public class SettingsViewModel : ViewModelBase
                 SelectedTheme = Themes.Contains(setting.Theme) ? setting.Theme : "Light";
                 BackupFolderPath = setting.BackupFolderPath;
                 DefaultPrinterName = setting.DefaultPrinterName;
+                InvoiceStorageFolderPath = setting.InvoiceStorageFolderPath;
             }
         }
         catch (Exception ex)
@@ -260,19 +272,19 @@ public class SettingsViewModel : ViewModelBase
         IsBusy = true;
         try
         {
-            var company = _dbContext.Companies.FirstOrDefault(c => c.Id == 1) ?? new Company { Id = 1 };
+            var company = _dbContext.Companies.FirstOrDefault(c => c.Id == _sessionContext.CurrentCompanyId) ?? new Company { Id = _sessionContext.CurrentCompanyId };
             
-            company.CompanyName = CompanyName;
-            company.GSTIN = GSTIN;
-            company.PAN = PAN;
-            company.Address = Address;
-            company.Phone = Phone;
-            company.Email = Email;
-            company.BankName = BankName;
-            company.BankAccountNumber = BankAccountNumber;
-            company.BankIFSC = BankIFSC;
-            company.BankBranch = BankBranch;
-            company.TermsAndConditions = TermsAndConditions;
+            company.CompanyName = CompanyName?.Trim() ?? string.Empty;
+            company.GSTIN = GSTIN?.Trim() ?? string.Empty;
+            company.PAN = PAN?.Trim() ?? string.Empty;
+            company.Address = Address?.Trim() ?? string.Empty;
+            company.Phone = Phone?.Trim() ?? string.Empty;
+            company.Email = Email?.Trim() ?? string.Empty;
+            company.BankName = BankName?.Trim() ?? string.Empty;
+            company.BankAccountNumber = BankAccountNumber?.Trim() ?? string.Empty;
+            company.BankIFSC = BankIFSC?.Trim() ?? string.Empty;
+            company.BankBranch = BankBranch?.Trim() ?? string.Empty;
+            company.TermsAndConditions = TermsAndConditions?.Trim() ?? string.Empty;
             company.State = SelectedState;
             company.LogoPath = LogoPath;
             company.SignaturePath = SignaturePath;
@@ -298,7 +310,7 @@ public class SettingsViewModel : ViewModelBase
         IsBusy = true;
         try
         {
-            var setting = _dbContext.Settings.FirstOrDefault(s => s.Id == 1) ?? new Setting { Id = 1 };
+            var setting = _dbContext.Settings.FirstOrDefault(s => s.Id == _sessionContext.CurrentSettingId) ?? new Setting { Id = _sessionContext.CurrentSettingId };
 
             string oldTheme = setting.Theme;
 
@@ -308,6 +320,7 @@ public class SettingsViewModel : ViewModelBase
             setting.Theme = SelectedTheme;
             setting.BackupFolderPath = BackupFolderPath;
             setting.DefaultPrinterName = DefaultPrinterName;
+            setting.InvoiceStorageFolderPath = InvoiceStorageFolderPath?.Trim() ?? string.Empty;
 
             _dbContext.Settings.Update(setting);
             await _dbContext.SaveChangesAsync();
@@ -379,6 +392,18 @@ public class SettingsViewModel : ViewModelBase
         if (dialog.ShowDialog() == true)
         {
             BackupFolderPath = dialog.FolderName;
+        }
+    }
+
+    private void SelectInvoiceStoragePath()
+    {
+        var dialog = new OpenFolderDialog
+        {
+            Title = "Select Invoice Storage Folder"
+        };
+        if (dialog.ShowDialog() == true)
+        {
+            InvoiceStorageFolderPath = dialog.FolderName;
         }
     }
 }

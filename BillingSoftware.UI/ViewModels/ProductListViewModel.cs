@@ -111,7 +111,7 @@ public class ProductListViewModel : ViewModelBase
         set => SetProperty(ref _formHSNCode, value);
     }
 
-    private decimal _formGSTPercentage = 18;
+    private decimal _formGSTPercentage = 5;
     public decimal FormGSTPercentage
     {
         get => _formGSTPercentage;
@@ -235,10 +235,10 @@ public class ProductListViewModel : ViewModelBase
         _formId = Guid.Empty;
         FormName = string.Empty;
         FormDescription = string.Empty;
-        FormCategory = Categories.FirstOrDefault();
-        FormUnit = Units.FirstOrDefault();
+        FormCategory = Categories.FirstOrDefault(c => c.Name == "TOWEL") ?? Categories.FirstOrDefault();
+        FormUnit = Units.FirstOrDefault(u => u.Code == "PCS") ?? Units.FirstOrDefault();
         FormHSNCode = string.Empty;
-        FormGSTPercentage = 18;
+        FormGSTPercentage = 5;
         FormPurchasePrice = 0;
         FormSalesPrice = 0;
         FormOpeningStock = 0;
@@ -255,8 +255,8 @@ public class ProductListViewModel : ViewModelBase
         _formId = SelectedProduct.Id;
         FormName = SelectedProduct.Name;
         FormDescription = SelectedProduct.Description;
-        FormCategory = Categories.FirstOrDefault(c => c.Id == SelectedProduct.CategoryId) ?? Categories.FirstOrDefault();
-        FormUnit = Units.FirstOrDefault(u => u.Id == SelectedProduct.UnitId) ?? Units.FirstOrDefault();
+        FormCategory = Categories.FirstOrDefault(c => c.Id == SelectedProduct.CategoryId) ?? Categories.FirstOrDefault(c => c.Name == "TOWEL") ?? Categories.FirstOrDefault();
+        FormUnit = Units.FirstOrDefault(u => u.Id == SelectedProduct.UnitId) ?? Units.FirstOrDefault(u => u.Code == "PCS") ?? Units.FirstOrDefault();
         FormHSNCode = SelectedProduct.HSNCode;
         FormGSTPercentage = SelectedProduct.GSTPercentage;
         FormPurchasePrice = SelectedProduct.PurchasePrice;

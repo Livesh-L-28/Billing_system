@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace BillingSoftware.UI.ViewModels;
 public class ReportsViewModel : ViewModelBase
 {
     private readonly BillingDbContext _dbContext;
+    private readonly ISessionContext _sessionContext;
     private readonly IAuditLogger _auditLogger;
 
     // Filter Fields
@@ -62,17 +64,31 @@ public class ReportsViewModel : ViewModelBase
         set => SetProperty(ref _purchases, value);
     }
 
+    private ObservableCollection<InvoiceHistoryRow> _allInvoices = new();
+    public ObservableCollection<InvoiceHistoryRow> AllInvoices
+    {
+        get => _allInvoices;
+        set => SetProperty(ref _allInvoices, value);
+    }
+
     // Commands
     public ICommand GenerateReportCommand { get; }
     public ICommand ExportExcelCommand { get; }
+    public IAsyncRelayCommand<string> PrintInvoiceCopyCommand { get; }
+    public IAsyncRelayCommand<string> SaveInvoicePdfCommand { get; }
+    public ICommand EditInvoiceCommand { get; }
 
-    public ReportsViewModel(BillingDbContext dbContext, IAuditLogger auditLogger)
+    public ReportsViewModel(BillingDbContext dbContext, ISessionContext sessionContext, IAuditLogger auditLogger)
     {
         _dbContext = dbContext;
+        _sessionContext = sessionContext;
         _auditLogger = auditLogger;
 
         GenerateReportCommand = new AsyncRelayCommand(GenerateReportsAsync);
         ExportExcelCommand = new RelayCommand(ExportToExcel);
+        PrintInvoiceCopyCommand = new AsyncRelayCommand<string>(ExecutePrintInvoiceCopyAsync);
+        SaveInvoicePdfCommand = new AsyncRelayCommand<string>(ExecuteSaveInvoicePdfAsync);
+        EditInvoiceCommand = new RelayCommand<string>(ExecuteEditInvoice);
 
         Title = "GST Reports Console";
         _ = GenerateReportsAsync();
@@ -86,10 +102,13 @@ public class ReportsViewModel : ViewModelBase
             DateTime start = StartDate.Date;
             DateTime end = EndDate.Date.AddDays(1).AddTicks(-1);
 
+            Guid currentUserId = _sessionContext.CurrentUser?.Id ?? Guid.Empty;
+
             // 1. GSTR-1 B2B (Sales to Registered Customers)
             var b2b = await _dbContext.Invoices
                 .Include(i => i.Customer)
                 .Where(i => i.InvoiceDate >= start && i.InvoiceDate <= end && !i.IsCancelled &&
+                            i.CreatedBy == currentUserId &&
                             i.Customer != null && i.Customer.CustomerType == "Registered")
                 .OrderBy(i => i.InvoiceDate)
                 .Select(i => new B2BReportRow
@@ -113,6 +132,7 @@ public class ReportsViewModel : ViewModelBase
             var b2cRaw = await _dbContext.Invoices
                 .Include(i => i.Customer)
                 .Where(i => i.InvoiceDate >= start && i.InvoiceDate <= end && !i.IsCancelled &&
+                            i.CreatedBy == currentUserId &&
                             i.Customer != null && i.Customer.CustomerType != "Registered")
                 .ToListAsync();
 
@@ -137,7 +157,7 @@ public class ReportsViewModel : ViewModelBase
                 .Include(ii => ii.Invoice)
                 .Include(ii => ii.Product)
                 .ThenInclude(p => p!.Unit)
-                .Where(ii => ii.Invoice.InvoiceDate >= start && ii.Invoice.InvoiceDate <= end && !ii.Invoice.IsCancelled)
+                .Where(ii => ii.Invoice!.InvoiceDate >= start && ii.Invoice!.InvoiceDate <= end && !ii.Invoice!.IsCancelled && ii.Invoice!.CreatedBy == currentUserId)
                 .ToListAsync();
 
             var hsn = invoiceItems
@@ -164,7 +184,7 @@ public class ReportsViewModel : ViewModelBase
             // 4. GSTR-2 Purchases Report
             var purchasesRaw = await _dbContext.Purchases
                 .Include(p => p.Supplier)
-                .Where(p => p.PurchaseDate >= start && p.PurchaseDate <= end)
+                .Where(p => p.PurchaseDate >= start && p.PurchaseDate <= end && p.CreatedBy == currentUserId)
                 .OrderBy(p => p.PurchaseDate)
                 .Select(p => new PurchaseReportRow
                 {
@@ -181,6 +201,28 @@ public class ReportsViewModel : ViewModelBase
                 .ToListAsync();
 
             Purchases = new ObservableCollection<PurchaseReportRow>(purchasesRaw);
+
+            // 5. Invoice History (All Invoices)
+            var history = await _dbContext.Invoices
+                .Include(i => i.Customer)
+                .Where(i => i.InvoiceDate >= start && i.InvoiceDate <= end && !i.IsCancelled &&
+                            i.CreatedBy == currentUserId)
+                .OrderByDescending(i => i.InvoiceDate)
+                .ThenByDescending(i => i.InvoiceNumber)
+                .Select(i => new InvoiceHistoryRow
+                {
+                    InvoiceId = i.Id,
+                    InvoiceDate = i.InvoiceDate,
+                    InvoiceNo = i.FormattedInvoiceNumber,
+                    CustomerName = i.Customer != null ? i.Customer.Name : "Walk-in Customer",
+                    PaymentMethod = i.PaymentMethod,
+                    SubTotal = i.SubTotal,
+                    TaxTotal = i.CGSTTotal + i.SGSTTotal + i.IGSTTotal,
+                    GrandTotal = i.GrandTotal
+                })
+                .ToListAsync();
+
+            AllInvoices = new ObservableCollection<InvoiceHistoryRow>(history);
         }
         catch (Exception ex)
         {
@@ -271,6 +313,121 @@ public class ReportsViewModel : ViewModelBase
         
         ws.Cells.AutoFitColumns();
     }
+
+    private async Task ExecutePrintInvoiceCopyAsync(string? invoiceNo)
+    {
+        if (string.IsNullOrWhiteSpace(invoiceNo)) return;
+
+        try
+        {
+            var invoice = await _dbContext.Invoices
+                .Include(i => i.Customer)
+                .Include(i => i.InvoiceItems)
+                .FirstOrDefaultAsync(i => i.FormattedInvoiceNumber == invoiceNo);
+
+            if (invoice == null)
+            {
+                System.Windows.MessageBox.Show("Invoice not found in database.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return;
+            }
+
+            var company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Id == _sessionContext.CurrentCompanyId) ?? new Company { Id = _sessionContext.CurrentCompanyId };
+            
+            var tempDir = Path.Combine(Path.GetTempPath(), "BillingSoftware");
+            if (!Directory.Exists(tempDir)) Directory.CreateDirectory(tempDir);
+            var tempFile = Path.Combine(tempDir, $"{invoice.FormattedInvoiceNumber.Replace("/", "_").Replace("\\", "_")}.pdf");
+
+            BillingSoftware.Printing.InvoicePdfGenerator.GeneratePdf(invoice, company, tempFile);
+
+            // Send to printer
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    var printProcess = new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = tempFile,
+                            Verb = "print",
+                            CreateNoWindow = true,
+                            WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                            UseShellExecute = true
+                        }
+                    };
+                    printProcess.Start();
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = tempFile,
+                            UseShellExecute = true
+                        });
+                        System.Windows.MessageBox.Show("Direct silent printing is not supported by your system's default PDF configuration. We have opened the invoice in your default viewer so you can print it (Ctrl + P).", "Direct Print Fallback", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    }
+                    catch (Exception openEx)
+                    {
+                        System.Windows.MessageBox.Show($"Direct print failed, and we could not open the PDF externally.\nDetails: {openEx.Message}", "Print Failed", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    }
+                }
+            });
+
+            await _auditLogger.LogActivityAsync("Print Invoice Copy", "Reports", $"Printed copy of invoice {invoice.FormattedInvoiceNumber}");
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show("Failed to print invoice copy: " + ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    private async Task ExecuteSaveInvoicePdfAsync(string? invoiceNo)
+    {
+        if (string.IsNullOrWhiteSpace(invoiceNo)) return;
+
+        try
+        {
+            var invoice = await _dbContext.Invoices
+                .Include(i => i.Customer)
+                .Include(i => i.InvoiceItems)
+                .FirstOrDefaultAsync(i => i.FormattedInvoiceNumber == invoiceNo);
+
+            if (invoice == null)
+            {
+                System.Windows.MessageBox.Show("Invoice not found in database.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return;
+            }
+
+            var company = await _dbContext.Companies.FirstOrDefaultAsync(c => c.Id == _sessionContext.CurrentCompanyId) ?? new Company { Id = _sessionContext.CurrentCompanyId };
+
+            // Open Save File Dialog
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "PDF files (*.pdf)|*.pdf",
+                FileName = $"{invoice.FormattedInvoiceNumber.Replace("/", "_").Replace("\\", "_")}.pdf",
+                Title = "Save Invoice PDF Copy"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                BillingSoftware.Printing.InvoicePdfGenerator.GeneratePdf(invoice, company, saveFileDialog.FileName);
+                System.Windows.MessageBox.Show("Invoice PDF copy saved successfully.", "Save Success", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                await _auditLogger.LogActivityAsync("Save Invoice Copy PDF", "Reports", $"Saved PDF copy of invoice {invoice.FormattedInvoiceNumber} to {saveFileDialog.FileName}");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show("Failed to save invoice PDF: " + ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+        }
+    }
+
+    private void ExecuteEditInvoice(string? invoiceNo)
+    {
+        if (string.IsNullOrWhiteSpace(invoiceNo)) return;
+        _sessionContext.RequestNavigation("BillingViewModel", invoiceNo);
+    }
 }
 
 // Report Data Transfer Objects
@@ -324,4 +481,16 @@ public class PurchaseReportRow
     public decimal SGST { get; set; }
     public decimal IGST { get; set; }
     public decimal InvoiceValue { get; set; }
+}
+
+public class InvoiceHistoryRow
+{
+    public Guid InvoiceId { get; set; }
+    public DateTime InvoiceDate { get; set; }
+    public string InvoiceNo { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+    public string PaymentMethod { get; set; } = string.Empty;
+    public decimal SubTotal { get; set; }
+    public decimal TaxTotal { get; set; }
+    public decimal GrandTotal { get; set; }
 }

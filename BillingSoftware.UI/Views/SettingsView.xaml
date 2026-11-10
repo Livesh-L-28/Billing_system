@@ -261,6 +261,7 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <!-- Selected Theme -->
@@ -276,7 +277,7 @@
                                     </StackPanel>
 
                                     <!-- Backup Directory Path Picker -->
-                                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12">
                                         <TextBlock Text="Local Backup Directory Path" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,5" />
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -285,6 +286,19 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBox Text="{Binding BackupFolderPath, Mode=OneWay}" IsReadOnly="True" Grid.Column="0"/>
                                             <Button Content="Choose Folder..." Command="{Binding SelectBackupPathCommand}" Style="{StaticResource SecondaryButton}" Grid.Column="1" Margin="8,0,0,0" Height="36"/>
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <!-- Invoice Storage Directory Path Picker -->
+                                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                                        <TextBlock Text="Local Invoice Storage Directory Path" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,5" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Text="{Binding InvoiceStorageFolderPath, Mode=OneWay}" IsReadOnly="True" Grid.Column="0"/>
+                                            <Button Content="Choose Folder..." Command="{Binding SelectInvoiceStoragePathCommand}" Style="{StaticResource SecondaryButton}" Grid.Column="1" Margin="8,0,0,0" Height="36"/>
                                         </Grid>
                                     </StackPanel>
                                 </Grid>

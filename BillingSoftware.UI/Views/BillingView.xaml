@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BillingSoftware.UI.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="650" d:DesignWidth="1050">
+             d:DesignHeight="650" d:DesignWidth="1050"
+             PreviewKeyDown="UserControl_PreviewKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
             <!-- Left Side: Invoicing Line Entries -->
@@ -48,9 +49,12 @@
                         <!-- Customer Selector -->
                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
                             <TextBlock Text="Select Customer *" Style="{StaticResource MutedText}" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <ComboBox ItemsSource="{Binding Customers}" 
+                            <ComboBox ItemsSource="{Binding CustomersView}" 
                                       SelectedItem="{Binding SelectedCustomer}" 
-                                      DisplayMemberPath="Name" />
+                                      DisplayMemberPath="Name"
+                                      IsEditable="True"
+                                      IsTextSearchEnabled="False"
+                                      KeyUp="CustomerComboBox_KeyUp" />
                         </StackPanel>
 
                         <!-- Billing Address (Read-only) -->
@@ -94,9 +98,12 @@
                         <!-- Product Selector -->
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
                             <TextBlock Text="Select Product *" Style="{StaticResource MutedText}" FontSize="11" Margin="0,0,0,4"/>
-                            <ComboBox ItemsSource="{Binding Products}" 
+                            <ComboBox ItemsSource="{Binding ProductsView}" 
                                       SelectedItem="{Binding SelectedProduct}" 
-                                      DisplayMemberPath="Name" />
+                                      DisplayMemberPath="Name"
+                                      IsEditable="True"
+                                      IsTextSearchEnabled="False"
+                                      KeyUp="ProductComboBox_KeyUp" />
                         </StackPanel>
 
                         <!-- Quantity -->
@@ -202,7 +209,8 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,0,6">
                                 <CheckBox Content="Manual" 
-                                          IsChecked="{Binding IsManualInvoiceNumber}" />
+                                          IsChecked="{Binding IsManualInvoiceNumber}"
+                                          IsEnabled="{Binding IsNewMode}" />
                             </StackPanel>
                         </Grid>
 
@@ -343,9 +351,10 @@
                         </StackPanel>
                     </ScrollViewer>
 
-                    <!-- Save & Clear Action Buttons -->
+                    <!-- Save, Print & Clear Action Buttons -->
                     <StackPanel Grid.Row="2" Margin="0,15,0,0">
-                        <Button Content="Save &amp; Generate Invoice" Command="{Binding SaveInvoiceCommand}" Height="40" Margin="0,0,0,8"/>
+                        <Button Content="Print Invoice" Command="{Binding PrintInvoiceCommand}" Height="40" Margin="0,0,0,8"/>
+                        <Button Content="Save Invoice" Command="{Binding SaveInvoiceCommand}" Style="{StaticResource SecondaryButton}" Height="40" Margin="0,0,0,8"/>
                         <Button Content="Clear Form" Command="{Binding ClearFormCommand}" Style="{StaticResource SecondaryButton}" Height="36"/>
                     </StackPanel>
                 </Grid>

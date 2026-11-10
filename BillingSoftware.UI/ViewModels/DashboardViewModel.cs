@@ -7,12 +7,14 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using BillingSoftware.Core.Entities;
 using BillingSoftware.Database;
+using BillingSoftware.Application.Services;
 
 namespace BillingSoftware.UI.ViewModels;
 
 public class DashboardViewModel : ViewModelBase
 {
     private readonly BillingDbContext _dbContext;
+    private readonly ISessionContext _sessionContext;
 
     // KPI Summary stats
     private int _todaySalesCount;
@@ -69,9 +71,10 @@ public class DashboardViewModel : ViewModelBase
     // Refresh command
     public ICommand RefreshCommand { get; }
 
-    public DashboardViewModel(BillingDbContext dbContext)
+    public DashboardViewModel(BillingDbContext dbContext, ISessionContext sessionContext)
     {
         _dbContext = dbContext;
+        _sessionContext = sessionContext;
         RefreshCommand = new AsyncRelayCommand(LoadDashboardDataAsync);
 
         Title = "Dashboard Summary";
@@ -86,8 +89,9 @@ public class DashboardViewModel : ViewModelBase
             DateTime todayLocal = DateTime.Today;
 
             // Invoices today
+            Guid currentUserId = _sessionContext.CurrentUser?.Id ?? Guid.Empty;
             var todayInvoices = await _dbContext.Invoices
-                .Where(i => i.InvoiceDate >= todayLocal && !i.IsCancelled)
+                .Where(i => i.InvoiceDate >= todayLocal && !i.IsCancelled && i.CreatedBy == currentUserId)
                 .ToListAsync();
 
             TodaySalesCount = todayInvoices.Count;

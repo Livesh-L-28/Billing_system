@@ -1,0 +1,19 @@
+# Build and Output Directories
+[Bb]in/
+[Oo]bj/
+**/bin/
+**/obj/
+
+# Large binaries (exceeds GitHub 100MB limit)
+BillSoft.exe
+*.r2r.dll
+
+# Test databases & Temporary Files
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.suo
+*.user
+.vs/
+.vscode/
